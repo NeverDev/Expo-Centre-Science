@@ -8,6 +8,7 @@ from source.image_recognition.hand_button import HandButton
 from OpenGL.GL import *
 from source.settings.resources import Resources
 from multiprocessing import SimpleQueue
+from source.physics.mechanics import update_stress
 import random
 
 # strings ressources for futur languages
@@ -604,8 +605,7 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
 
-
-                         stress = np.mean(Glob.brick_array.get_stress(index[0], index[1]))
+                        stress = update_stress(b_xy.indexes[0][1])
 
                          if stress >= 10:
                             my_color_meca = (0 1 0 1)

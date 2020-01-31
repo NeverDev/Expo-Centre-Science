@@ -4,7 +4,7 @@ import cv2
 from source.settings.configuration import Config as Conf
 from source.physics.heat_equation import HeatEquation
 from source.physics.corrosion_equation import update_corrosion
-#from source.physics.mechanics import mechanics_stress
+from source.physics.mechanics import update_stress
 
 
 class Brick:
@@ -295,7 +295,8 @@ class BrickArray:
                                 if n.drowned and np.nanmax(self.get_temp(*n.indexes[0])) > 1500:
                                     brick.update_corrosion(self.heq.dt)
                                                                         
-                                    if brick.material.health <= 0.0 or np.max(self.get_temp(i, j)) >= brick.material.T_max: """ or np.max(self.get_stress(i, j)) >= brick.material.stress : """
+                                    if brick.material.health <= 0.0 or np.max(self.get_temp(i, j)) >= brick.material.T_max or update_stress(brick.indexes[0][1]
+)>= brick.material.stress :
                                         brick.material.is_broken = True
 
                 for i in range(Conf.dim_grille[0]):
