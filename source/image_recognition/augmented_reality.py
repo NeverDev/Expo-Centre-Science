@@ -602,8 +602,8 @@ class DrawingHandler:
 
                         stress = update_stress(b_xy.indexes[0][1])
 
-                        if stress >= 10:
-                            my_color_meca = [0, 1, 0, 1]
+                        if stress >= 3.06:
+                            my_color_meca = [1, 0, 0, 1]
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                             "temp_buffer": temp_array.flatten(),
                                                             "brick_dim": [Glob.brick_array.step_x,
@@ -617,7 +617,7 @@ class DrawingHandler:
 
                             self.shader_handler_brick.unbind()
 
-                        elif 5 < stress < 10:
+                        elif 1 <= stress < 3.06:
                             my_color_meca = [1, 0.5, 0, 1]
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                             "temp_buffer": temp_array.flatten(),
@@ -633,8 +633,8 @@ class DrawingHandler:
 
                             self.shader_handler_brick.unbind()
 
-                        elif 3.06 < stress < 5:
-                            my_color_meca = [1, 0, 0, 1]
+                        elif 0 <= stress < 1:
+                            my_color_meca = [0, 1, 0, 1]
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                             "temp_buffer": temp_array.flatten(),
                                                             "brick_dim": [Glob.brick_array.step_x,
