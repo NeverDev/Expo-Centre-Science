@@ -155,11 +155,11 @@ class AugmentedReality:
                 start_color = (0, 0, 255, 255)
                 reset_color = (255, 0, 0, 255)
                 mask[Conf.cam_area[0][0]:Conf.cam_area[1][0],
-                     Conf.cam_area[0][1]:Conf.cam_area[1][1]] = grid_color
+                Conf.cam_area[0][1]:Conf.cam_area[1][1]] = grid_color
                 mask[Conf.hand_area_1[0][0]:Conf.hand_area_1[1][0],
-                     Conf.hand_area_1[0][1]:Conf.hand_area_1[1][1]] = start_color
+                Conf.hand_area_1[0][1]:Conf.hand_area_1[1][1]] = start_color
                 mask[Conf.hand_area_2[0][0]:Conf.hand_area_2[1][0],
-                     Conf.hand_area_2[0][1]:Conf.hand_area_2[1][1]] = reset_color
+                Conf.hand_area_2[0][1]:Conf.hand_area_2[1][1]] = reset_color
 
                 texture = cv2.addWeighted(texture, 0.75, mask, 0.25, 0)
                 # texture = np.mean([texture, mask], axis=0, dtype=np.uint8)
@@ -374,7 +374,7 @@ class DrawingHandler:
         self.shader_handler_brick = ShaderHandler("./shader/TemperatureShader",
                                                   {"Corrosion": float, "temp_buffer": GL_SHADER_STORAGE_BUFFER,
                                                    "brick_dim": np.ndarray, "grid_pos": int, "step": float,
-                                                   "border": float})
+                                                   "border": float, "color_meca": np.ndarray})
 
         self.steel_flow_dir_x, self.steel_flow_dir_y = 1, 1
         self.shader_clock = clock()
@@ -450,7 +450,6 @@ class DrawingHandler:
                                    (Conf.dim_grille[1] - l - 1) * step_y + .3 * step_y, GLUT_BITMAP_HELVETICA_18, txt,
                                    1, 1, 1)
 
-  
     @staticmethod
     def draw_thermal_diffusivity_corr(x_s: int, y_s: int) -> void:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Resistances", *Conf.text_color)
@@ -482,7 +481,6 @@ class DrawingHandler:
                         glut_print(x_s + c * step_x + .5 * step_x - 3 * len(txt),
                                    (Conf.dim_grille[1] - l - 1) * step_y + .3 * step_y, GLUT_BITMAP_HELVETICA_18, txt,
                                    1, 1, 1)
-   
 
     @staticmethod
     def draw_resistance_corr(x_s: int, y_s: int) -> void:
@@ -549,57 +547,54 @@ class DrawingHandler:
                         if index[1] < Conf.dim_grille[1] - 1:
                             border += 2
 
-                        my_color_meca = (1 1 1 1)
+                        my_color_meca = [1, 1, 1, 1]
                         self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                         "temp_buffer": temp_array.flatten(),
                                                         "brick_dim": [Glob.brick_array.step_x, Glob.brick_array.step_y],
                                                         "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                        "border": border,
-                                                         "color_meca": my_color_meca})
+                                                        "border": border, "color_meca": my_color_meca})
 
                         # gradient
                         draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
-                        
+
                         self.shader_handler_brick.unbind()
 
                         # do not update buffer in the next iterations
                         self.shader_handler_brick.fix_buffer()
 
+                        # draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h, 1, 1, 1)
 
-                        #draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h, 1, 1, 1)
-                        
                         temp = np.mean(Glob.brick_array.get_temp(index[0], index[1]) - 273)
-                        
+
                         text_color = (0, 0, 0)
                         if 0 < temp < 500:
-                            message = "froid" 
+                            message = "froid"
                             glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                        y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                        GLUT_BITMAP_HELVETICA_12,
-                                        message, *text_color)
-                        
-                        elif 500 < temp < 1400:
-                            message = "chaud" 
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                        y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                        GLUT_BITMAP_HELVETICA_12,
-                                        message, *text_color)
-                        
-                        else:
-                            message = "brulant" 
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                        y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                        GLUT_BITMAP_HELVETICA_12,
-                                        message, *text_color)
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
 
-                        
-                        #Affiche la tempe sur les briques
-                        #message = "%0.0f °C" % temp
-                        #glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                  #y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                   #GLUT_BITMAP_HELVETICA_12,
-                                   #message, 1, 1, 1)
-                                   
+                        elif 500 < temp < 1400:
+                            message = "chaud"
+                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
+
+                        else:
+                            message = "brulant"
+                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
+
+                        # Affiche la tempe sur les briques
+                        # message = "%0.0f °C" % temp
+                        # glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                        # y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                        # GLUT_BITMAP_HELVETICA_12,
+                        # message, 1, 1, 1)
+
                         """glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                     y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                     GLUT_BITMAP_HELVETICA_12,
@@ -607,61 +602,65 @@ class DrawingHandler:
 
                         stress = update_stress(b_xy.indexes[0][1])
 
-                         if stress >= 10:
-                            my_color_meca = (0 1 0 1)
+                        if stress >= 10:
+                            my_color_meca = 0, 1, 0, 1
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
-                                                                 "temp_buffer": temp_array.flatten(),
-                                                                 "brick_dim": [Glob.brick_array.step_x, Glob.brick_array.step_y],
-                                                                 "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                                 "border": border,
-                                                                 "color_meca": my_color_meca})
+                                                            "temp_buffer": temp_array.flatten(),
+                                                            "brick_dim": [Glob.brick_array.step_x,
+                                                                          Glob.brick_array.step_y],
+                                                            "grid_pos": pos, "step": Glob.brick_array.nx,
+                                                            "border": border,
+                                                            "color_meca": my_color_meca})
 
-                             # gradient
+                            # gradient
                             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
                             self.shader_handler_brick.unbind()
 
-
-                         elif 5 < stress < 10:
-                            my_color_meca = (1 0.5 0 1)
+                        elif 5 < stress < 10:
+                            my_color_meca = 1, 0.5, 0, 1
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                             "temp_buffer": temp_array.flatten(),
-                                                            "brick_dim": [Glob.brick_array.step_x, Glob.brick_array.step_y],
+                                                            "brick_dim": [Glob.brick_array.step_x,
+                                                                          Glob.brick_array.step_y],
                                                             "grid_pos": pos, "step": Glob.brick_array.nx,
                                                             "border": border,
-                                                            "color_meca": my_color_meca})
+                                                            "color_meca": my_color_meca
+                                                            })
 
-                             # gradient
-                             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                            # gradient
+                            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
-                             self.shader_handler_brick.unbind()
+                            self.shader_handler_brick.unbind()
 
-                         else 3.06 < stress < 5:
-                            my_color_meca = (1 0 0 1)
+                        elif 3.06 < stress < 5:
+                            my_color_meca = [1, 0, 0, 1]
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
                                                             "temp_buffer": temp_array.flatten(),
-                                                            "brick_dim": [Glob.brick_array.step_x, Glob.brick_array.step_y],
+                                                            "brick_dim": [Glob.brick_array.step_x,
+                                                                          Glob.brick_array.step_y],
                                                             "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                            "border": border,
-                                                            "color_meca": my_color_meca})
+                                                            "border": border,  "color_meca": my_color_meca})
 
-                             # gradient
-                             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                            # gradient
+                            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
-                             self.shader_handler_brick.unbind()
+                            self.shader_handler_brick.unbind()
 
-                    else:
-                        draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
-                                       step, h, 0, 0, 0, a if b_xy.drowned else 1)
+        else:
+            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
+                           step, h, 0, 0, 0, a if b_xy.drowned else 1)
 
-                    # draw_rectangle_empty(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
-                    #                      step, h, 0, 0, 0, 1)
+        # draw_rectangle_empty(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
+        #                      step, h, 0, 0, 0, 1)
+
 
     def draw_texture(self, tex_loc: int, _x: int, _y: int, l: int, h: int) -> void:
         glEnable(GL_TEXTURE_2D)
         self.tex_handler.use_texture(tex_loc)
         draw_textured_rectangle(_x, _y, l, h)
         glDisable(GL_TEXTURE_2D)
+
 
     @staticmethod
     def draw_frame(image: np.ndarray) -> void:
@@ -675,6 +674,7 @@ class DrawingHandler:
 
             if Glob.mode == 1:
                 draw_rectangle(x0, y0, xf - x0, yf - y0, 0, 0, 0)
+
 
     def draw_ui(self, start_button, number) -> void:
         """ Draw user interface and decoration"""
@@ -734,8 +734,8 @@ class DrawingHandler:
                     pass
                     draw_rectangle_empty(x0 + i * step_i, y0 + j * step_j, step_i, step_j, 0.2, 0.2, 0.2, 2)
 
-    def draw_text_screen(self):
 
+    def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
         texture[..., 3] = 240
 

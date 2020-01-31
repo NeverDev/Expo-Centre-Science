@@ -2,6 +2,7 @@
 
 in vec3 pos_fragment;
 
+uniform float color_meca[4];
 uniform float brick_dim[2];
 uniform int grid_pos;
 uniform float Corrosion;
@@ -13,7 +14,6 @@ uniform float step;
 uniform float border;
 
 // color parameter
-uniform float color_meca[4];
 
 out vec4 color;
 
@@ -53,7 +53,6 @@ void main()
     color = mix(vec4(0, 0, 1, 1), vec4(1, 0, 0, 1), max(0, (temperature) / 1600.0));
 //    bool condition = x > c;  // corrosive hole shape
     bool condition = (random > c || c == 0) || x < 0.01 || x > 0.99;//|| x > c;
-    color = color_meca;
-    color = condition ? color : vec4(0.1, 0.1, 0.1, 1);
+    color = condition ? vec4(color_meca[0], color_meca[1], color_meca[2], color_meca[3]) : vec4(0.1, 0.1, 0.1, 1);
 
 }
