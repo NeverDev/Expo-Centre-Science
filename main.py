@@ -27,6 +27,7 @@ class MainProgram:
     """ Main Class of the program, initiates everything and implements OpenGL environment"""
 
     def __init__(self):
+        self.timer = None
         self.init_opengl()
 
         self.animation_clock = None
@@ -43,8 +44,9 @@ class MainProgram:
         self.cam = Camera(Conf.width, Conf.height)
 
         # Main utility class
-        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                       self.liquid_im, self.liquid_grid)
+        # self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+        #                               self.liquid_im, self.liquid_grid)
+        self.current_activity = LanguageAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -92,20 +94,54 @@ class MainProgram:
         glutPostRedisplay()
 
     def idle_language(self):
+        # Timer Example
+        if self.timer is None:
+            self.timer = 1  # Seconds
+        elif self.timer > 0:
+            self.timer -= Glob.delta_t
+
+        else:
+            self.timer = None
+            # Back to game scene when difficulty is over
+            self.current_activity = VideoAR(self.cam)
         pass
 
     def idle_video(self):
+
+        # Timer Example
+        if self.timer is None:
+            self.timer = 10  # Seconds
+        elif self.timer > 0:
+            self.timer -= Glob.delta_t
+
+        else:
+            self.timer = None
+            # Back to game scene when difficulty is over
+            self.current_activity = DifficultyAR(self.cam)
         pass
 
     def idle_difficulty(self):
 
-        # Back to game scene when difficulty is over
-        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                       self.liquid_im, self.liquid_grid)
+        # Timer Example
+        if self.timer is None:
+            self.timer = 1  # Seconds
+        elif self.timer > 0:
+            self.timer -= Glob.delta_t
+            pass
+        else:
+            self.timer = None
+            # Back to game scene when difficulty is over
+            self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                           self.liquid_im, self.liquid_grid)
         pass
 
     def idle_game(self):
-        if Glob.mode != 2:
+        if Glob.mode == 3:
+            # Change scene
+            self.current_activity = DifficultyAR(self.cam)
+            Glob.mode = 0
+
+        elif Glob.mode != 2:
             # update frame from webcam
             self.current_activity.cam.take_frame()
 
@@ -158,9 +194,6 @@ class MainProgram:
 
                     self.lost_leak = False
 
-                    # Change scene
-                    self.current_activity = DifficultyAR(self.cam)
-
             # update brick grid in liquid simulation
             if Glob.brick_array is not None:
                 with self.liquid_grid.get_lock():  # synchronize access
@@ -197,25 +230,29 @@ class MainProgram:
 
     def display_language(self):
         # TODO render language screen here
-        pass
+        self.current_activity: LanguageAR
+        self.current_activity.render()  # look at LanguageAR.render()
 
     def display_video(self):
         # TODO render video screen here
-        pass
+        self.current_activity: VideoAR
+        self.current_activity.render()  # look at VideoAR.render()
 
     def display_difficulty(self):
         # TODO render difficulty screen here
-        pass
+        self.current_activity: DifficultyAR
+        self.current_activity.render()  # look at DifficultyAR.render()
 
     def display_Game(self):
-        self.current_activity.render()
+        self.current_activity: GameAR
+        self.current_activity.render()  # look at GameAR.render()
         if Glob.mode == 2:
             # reset mode
             self.current_activity.buttonStart.pause()
             self.current_activity.lost_screen()
 
             if clock() - self.animation_clock > 5:
-                Glob.mode = 0
+                Glob.mode = 3
         else:
             self.current_activity.buttonStart.unpause()
         pass

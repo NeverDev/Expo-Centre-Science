@@ -256,8 +256,9 @@ class Liquid(Process):
                 # Continue liquid simulation
                 if level is not None:
                     level.update(image, is_pouring)
-                    time = clock()
+
                     level.setup(is_pouring, clock() - time)
+                    time = clock()
 
                 # Update to main Process : write in liquid image memory location
                 with self.liquid_im.get_lock():

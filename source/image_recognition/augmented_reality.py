@@ -23,6 +23,7 @@ class AugmentedReality:
         self.cam = cam
 
 
+# Main Scene : the game
 class GameAR(AugmentedReality):
     """ Take and process webcam frames"""
 
@@ -182,6 +183,7 @@ class GameAR(AugmentedReality):
         self.draw_handler.draw_text_screen()
 
 
+# Language Selection Scene
 class LanguageAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
@@ -192,22 +194,42 @@ class LanguageAR(AugmentedReality):
         pass
 
     def render(self):
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "LANGUAGE", 1, 0, 1)
         pass
 
 
+# Video Scene
 class VideoAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
+        self.tex_handler = TextureHandler(2)
+        self.draw_handler = DrawingHandler(self.tex_handler)
+        self.video_path = "./ressources/poche.mp4"
+        self.video_cap = cv2.VideoCapture(self.video_path)
 
     def render(self):
-        pass
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
+        if self.video_cap.isOpened():
+            ret, frame = self.video_cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+                frame = cv2.resize(frame, (Conf.width, Conf.height))
+                frame = cv2.flip(frame, 0)
+
+                glEnable(GL_TEXTURE_2D)
+                self.tex_handler.bind_texture(1, frame, Conf.width, Conf.height)
+                self.tex_handler.use_texture(1)
+                draw_textured_rectangle(0, 0, Conf.width, Conf.height)
+                glDisable(GL_TEXTURE_2D)
 
 
+# Difficulty Scene
 class DifficultyAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
 
     def render(self):
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "DIFFICULTY", 0, 1, 0)
         pass
 
 
@@ -401,19 +423,22 @@ class DrawingHandler:
         control shaders and textures
     """
 
-    def __init__(self, texture_handler, q_activate: SimpleQueue, liquid_image):
-        self.q_activate = q_activate
-        with liquid_image.get_lock():
-            self.liquid_image = np.frombuffer(liquid_image.get_obj())
+    def __init__(self, texture_handler, q_activate: SimpleQueue = None, liquid_image=None):
+
         self.tex_handler = texture_handler
         self.offset_x, self.offset_y = 0, 0
         # self.shader_handler_molten_steel = ShaderHandler("./shader/LavaShader",
         #                                                  {"myTexture": None, "offset_x": float, "offset_y": float,
         #                                                   "delta_t": float, "height": float})
-        self.shader_handler_brick = ShaderHandler("./shader/TemperatureShader",
-                                                  {"Corrosion": float, "temp_buffer": GL_SHADER_STORAGE_BUFFER,
-                                                   "brick_dim": np.ndarray, "grid_pos": int, "step": float,
-                                                   "border": float, "color_meca": np.ndarray})
+        if q_activate is not None:
+            self.q_activate = q_activate
+            with liquid_image.get_lock():
+                self.liquid_image = np.frombuffer(liquid_image.get_obj())
+
+            self.shader_handler_brick = ShaderHandler("./shader/TemperatureShader",
+                                                      {"Corrosion": float, "temp_buffer": GL_SHADER_STORAGE_BUFFER,
+                                                       "brick_dim": np.ndarray, "grid_pos": int, "step": float,
+                                                       "border": float, "color_meca": np.ndarray})
 
         self.steel_flow_dir_x, self.steel_flow_dir_y = 1, 1
         self.shader_clock = clock()
