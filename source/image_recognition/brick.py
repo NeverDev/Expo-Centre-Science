@@ -323,7 +323,7 @@ class BrickArray:
         with self.liquid_im.get_lock():
             arr = np.frombuffer(self.liquid_im.get_obj())
             c = len(arr[arr > 0.0])
-            print(np.shape(arr), c)
+            # print(np.shape(arr), c)
 
         self.quantity = max(c / (300), self.quantity)
 

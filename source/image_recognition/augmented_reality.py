@@ -15,15 +15,21 @@ import random
 strings = Resources.strings['fr']
 
 
+# AugmentedReality class is split for each Scene
 class AugmentedReality:
+    """ Main class"""
+
+    def __init__(self, cam):
+        self.cam = cam
+
+
+class GameAR(AugmentedReality):
     """ Take and process webcam frames"""
 
-    def __init__(self, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> void:
-
+    def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
+        super().__init__(cam)
         # Attributes from parameters
-
         self.width, self.liquid_height = width, height
-        self.cam = Camera(width, height)
         self.q_activate = q_activate
         self.liquid_im = liquid_im
         self.liquid_grid = liquid_grid
@@ -73,7 +79,7 @@ class AugmentedReality:
         self.buttonReset.is_triggered, self.buttonReset.is_waiting = False, False
         Glob.brick_array.reset()
 
-    def render(self) -> void:
+    def render(self) -> None:
         """ render the scene with OpenGL"""
 
         if Glob.frame is not None:
@@ -121,7 +127,7 @@ class AugmentedReality:
                 self.buttonReset.pause()
                 self.new = True
 
-    def check_buttons(self) -> void:
+    def check_buttons(self) -> None:
         """ Update button image and read button state """
 
         # Set image to the newest one
@@ -144,35 +150,68 @@ class AugmentedReality:
 
     def detect_brick(self):
         """ Execute brick detection tools """
-        image_1, image_2 = self.brick_recognition.update_bricks(self.cam.image_raw.copy())
+        frame = self.cam.image_raw
+        if frame is not None:
+            image_1, image_2 = self.brick_recognition.update_bricks(frame.copy())
 
-        # if we are calibrating print brick map on the screen (upper left corner)
-        if image_1 is not None:
-            if Glob.debug:
-                texture = cv2.resize(image_1, (Conf.width, Conf.height))
-                mask = np.zeros(texture.shape, dtype=np.uint8)
-                grid_color = (0, 255, 0, 255)
-                start_color = (0, 0, 255, 255)
-                reset_color = (255, 0, 0, 255)
-                mask[Conf.cam_area[0][0]:Conf.cam_area[1][0],
-                Conf.cam_area[0][1]:Conf.cam_area[1][1]] = grid_color
-                mask[Conf.hand_area_1[0][0]:Conf.hand_area_1[1][0],
-                Conf.hand_area_1[0][1]:Conf.hand_area_1[1][1]] = start_color
-                mask[Conf.hand_area_2[0][0]:Conf.hand_area_2[1][0],
-                Conf.hand_area_2[0][1]:Conf.hand_area_2[1][1]] = reset_color
+            # if we are calibrating print brick map on the screen (upper left corner)
+            if image_1 is not None:
+                if Glob.debug:
+                    texture = cv2.resize(image_1, (Conf.width, Conf.height))
+                    mask = np.zeros(texture.shape, dtype=np.uint8)
+                    grid_color = (0, 255, 0, 255)
+                    start_color = (0, 0, 255, 255)
+                    reset_color = (255, 0, 0, 255)
+                    mask[Conf.cam_area[0][0]:Conf.cam_area[1][0],
+                    Conf.cam_area[0][1]:Conf.cam_area[1][1]] = grid_color
+                    mask[Conf.hand_area_1[0][0]:Conf.hand_area_1[1][0],
+                    Conf.hand_area_1[0][1]:Conf.hand_area_1[1][1]] = start_color
+                    mask[Conf.hand_area_2[0][0]:Conf.hand_area_2[1][0],
+                    Conf.hand_area_2[0][1]:Conf.hand_area_2[1][1]] = reset_color
 
-                texture = cv2.addWeighted(texture, 0.75, mask, 0.25, 0)
-                # texture = np.mean([texture, mask], axis=0, dtype=np.uint8)
-                self.tex_handler.bind_texture(0, cv2.flip(texture, 0), Conf.width, Conf.height)
+                    texture = cv2.addWeighted(texture, 0.75, mask, 0.25, 0)
+                    # texture = np.mean([texture, mask], axis=0, dtype=np.uint8)
+                    self.tex_handler.bind_texture(0, cv2.flip(texture, 0), Conf.width, Conf.height)
 
-                texture = cv2.resize(image_2, (Conf.width, Conf.height))
-                self.tex_handler.bind_texture(5, cv2.flip(texture, 0), Conf.width, Conf.height)
-            Glob.frame = image_1
+                    texture = cv2.resize(image_2, (Conf.width, Conf.height))
+                    self.tex_handler.bind_texture(5, cv2.flip(texture, 0), Conf.width, Conf.height)
+                Glob.frame = image_1
 
     def lost_screen(self):
         """ Draw a message on the screen """
         self.draw_handler.draw_text_screen()
 
+
+class LanguageAR(AugmentedReality):
+    def __init__(self, cam) -> None:
+        super().__init__(cam)
+        self.buttonFR, self.buttonEN = None, None
+        self.init_start_buttons()
+
+    def init_start_buttons(self):
+        pass
+
+    def render(self):
+        pass
+
+
+class VideoAR(AugmentedReality):
+    def __init__(self, cam) -> None:
+        super().__init__(cam)
+
+    def render(self):
+        pass
+
+
+class DifficultyAR(AugmentedReality):
+    def __init__(self, cam) -> None:
+        super().__init__(cam)
+
+    def render(self):
+        pass
+
+
+# other classes
 
 class BrickRecognition:
     """ Detect bricks from webcam frame """
@@ -385,7 +424,7 @@ class DrawingHandler:
         self.kernel = np.ones((k_factor, k_factor), np.float32) / (k_factor * k_factor)
 
     def draw_molten_steel(self, x_s: int, y_s: int, w: int, h: int,
-                          r: float, g: float, b: float, active) -> void:
+                          r: float, g: float, b: float, active) -> None:
         """ draw "molten_steel" from a texture"""
 
         draw_rectangle(x_s - 20, y_s, w + 20, h, 0.1, 0.1, 0.1)
@@ -424,7 +463,7 @@ class DrawingHandler:
         # self.shader_handler_molten_steel.unbind()
 
     @staticmethod
-    def draw_thermal_diffusivity(x_s: int, y_s: int) -> void:
+    def draw_thermal_diffusivity(x_s: int, y_s: int) -> None:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Resistance thermique", *Conf.text_color)
         y0, x0 = Conf.cam_area[0]
         yf, xf = Conf.cam_area[1]
@@ -451,7 +490,7 @@ class DrawingHandler:
                                    1, 1, 1)
 
     @staticmethod
-    def draw_thermal_diffusivity_corr(x_s: int, y_s: int) -> void:
+    def draw_thermal_diffusivity_corr(x_s: int, y_s: int) -> None:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Resistances", *Conf.text_color)
         glut_print(0, 80, GLUT_BITMAP_HELVETICA_18, "thermique / corrosion", *Conf.text_color)
         y0, x0 = Conf.cam_area[0]
@@ -483,7 +522,7 @@ class DrawingHandler:
                                    1, 1, 1)
 
     @staticmethod
-    def draw_resistance_corr(x_s: int, y_s: int) -> void:
+    def draw_resistance_corr(x_s: int, y_s: int) -> None:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Resistances à la", *Conf.text_color)
         glut_print(0, 80, GLUT_BITMAP_HELVETICA_18, "corrosion", *Conf.text_color)
         y0, x0 = Conf.cam_area[0]
@@ -513,7 +552,7 @@ class DrawingHandler:
                                    (Conf.dim_grille[1] - l - 1) * step_y + .3 * step_y, GLUT_BITMAP_HELVETICA_18, txt,
                                    1, 1, 1)
 
-    def draw_temperatures(self, x_s: int, y_s: int, bricks) -> void:
+    def draw_temperatures(self, x_s: int, y_s: int, bricks) -> None:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Temperatures", *Conf.text_color)
 
         _range = 2 if Glob.mode == 1 else 1
@@ -564,7 +603,9 @@ class DrawingHandler:
 
                         # draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h, 1, 1, 1)
 
-                        temp = np.mean(Glob.brick_array.get_temp(index[0], index[1]) - 273)
+                        temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
+                        if temp is not None:
+                            temp = np.mean(temp)
 
                         text_color = (0, 0, 0)
                         if 0 < temp < 500:
@@ -640,7 +681,7 @@ class DrawingHandler:
                                                             "brick_dim": [Glob.brick_array.step_x,
                                                                           Glob.brick_array.step_y],
                                                             "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                            "border": border,  "color_meca": my_color_meca})
+                                                            "border": border, "color_meca": my_color_meca})
 
                             # gradient
                             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
@@ -654,16 +695,14 @@ class DrawingHandler:
         # draw_rectangle_empty(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
         #                      step, h, 0, 0, 0, 1)
 
-
-    def draw_texture(self, tex_loc: int, _x: int, _y: int, l: int, h: int) -> void:
+    def draw_texture(self, tex_loc: int, _x: int, _y: int, l: int, h: int) -> None:
         glEnable(GL_TEXTURE_2D)
         self.tex_handler.use_texture(tex_loc)
         draw_textured_rectangle(_x, _y, l, h)
         glDisable(GL_TEXTURE_2D)
 
-
     @staticmethod
-    def draw_frame(image: np.ndarray) -> void:
+    def draw_frame(image: np.ndarray) -> None:
         """ Draw the frame with OpenGL as a texture in the entire screen"""
         if type(image) != int:
             # draw background
@@ -675,8 +714,7 @@ class DrawingHandler:
             if Glob.mode == 1:
                 draw_rectangle(x0, y0, xf - x0, yf - y0, 0, 0, 0)
 
-
-    def draw_ui(self, start_button, number) -> void:
+    def draw_ui(self, start_button, number) -> None:
         """ Draw user interface and decoration"""
 
         # draw board informations
@@ -734,7 +772,6 @@ class DrawingHandler:
                     pass
                     draw_rectangle_empty(x0 + i * step_i, y0 + j * step_j, step_i, step_j, 0.2, 0.2, 0.2, 2)
 
-
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
         texture[..., 3] = 240
@@ -782,6 +819,8 @@ class Camera:
         # self.capture.set(cv2.CAP_PROP_BRIGHTNESS, -10)
         _, self.image_raw = self.capture.read()
 
-    def take_frame(self) -> void:
+    def take_frame(self) -> None:
         """ Update current raw frame in BGR format"""
-        _, self.image_raw = self.capture.read()
+        ret, self.image_raw = self.capture.read()
+        if not ret:
+            print("camera capture failed")

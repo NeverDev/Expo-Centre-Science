@@ -1,13 +1,12 @@
-
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from source.physics.liquid_equation import *
-from source.image_recognition.augmented_reality import AugmentedReality
+from source.image_recognition.augmented_reality import AugmentedReality, GameAR, DifficultyAR, VideoAR, LanguageAR, \
+    Camera
 
 from OpenGL.GLU import *
 from source.settings.configuration import Config as Conf, Globals as Glob
 import sys
-
 
 from multiprocessing import SimpleQueue, Array, freeze_support
 from OpenGL.arrays import numpymodule
@@ -20,6 +19,7 @@ sys.path += ['.']
 OpenGL.ERROR_ON_COPY = True
 
 import warnings
+
 warnings.simplefilter("error")
 
 
@@ -27,7 +27,6 @@ class MainProgram:
     """ Main Class of the program, initiates everything and implements OpenGL environment"""
 
     def __init__(self):
-
         self.init_opengl()
 
         self.animation_clock = None
@@ -41,9 +40,11 @@ class MainProgram:
 
         self.run_liquid_process()
 
+        self.cam = Camera(Conf.width, Conf.height)
+
         # Main utility class
-        self.augmented_reality = AugmentedReality(Conf.width, Conf.height, self.q_activate,
-                                                  self.liquid_im, self.liquid_grid)
+        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                       self.liquid_im, self.liquid_grid)
 
         # execute OpenGL loop forever
         self.loop()
@@ -77,36 +78,63 @@ class MainProgram:
         Glob.delta_t = clock() - Glob.t_ref
         Glob.t_ref = clock()
 
-        if Glob.mode !=2:
+        # swap between scene idle function
+        if type(self.current_activity) == LanguageAR:
+            self.idle_language()
+        elif type(self.current_activity) == VideoAR:
+            self.idle_video()
+        elif type(self.current_activity) == DifficultyAR:
+            self.idle_difficulty()
+        elif type(self.current_activity) == GameAR:
+            self.idle_game()
+
+        # tell OpenGL to redraw as soon as possible
+        glutPostRedisplay()
+
+    def idle_language(self):
+        pass
+
+    def idle_video(self):
+        pass
+
+    def idle_difficulty(self):
+
+        # Back to game scene when difficulty is over
+        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                       self.liquid_im, self.liquid_grid)
+        pass
+
+    def idle_game(self):
+        if Glob.mode != 2:
             # update frame from webcam
-            self.augmented_reality.cam.take_frame()
+            self.current_activity.cam.take_frame()
 
             if Glob.mode == 0:
                 # build mode, update bricks
-                self.augmented_reality.detect_brick()
+                self.current_activity.detect_brick()
 
-            self.augmented_reality.check_buttons()
+            self.current_activity.check_buttons()
 
             if Glob.mode == 1:
                 # Testing structure mode
                 if Conf.cooling:
-                    Conf.t_chamber = Conf.temperature if (self.augmented_reality.buttonStart.is_triggered
-                                                          and self.augmented_reality.number) > 0 \
+                    Conf.t_chamber = Conf.temperature if (self.current_activity.buttonStart.is_triggered
+                                                          and self.current_activity.number) > 0 \
                         else max(Conf.t_chamber - Conf.cooling_factor * Glob.delta_t, 293)
-                    Glob.brick_array.update(not self.augmented_reality.buttonStart.is_ready()
-                                            and self.augmented_reality.number >= 0)
+                    Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
+                                            and self.current_activity.number >= 0)
 
                 else:
-                    Glob.brick_array.update(not self.augmented_reality.buttonStart.is_ready()
-                                            and self.augmented_reality.number >= 0)
+                    Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
+                                            and self.current_activity.number >= 0)
 
                 lost_struct = False  # Glob.brick_array.test_loose()
                 if not self.lost.empty():
                     self.lost_leak = self.lost.get()
 
-                if (self.lost_leak or lost_struct) or self.augmented_reality.buttonReset.is_triggered:
+                if (self.lost_leak or lost_struct) or self.current_activity.buttonReset.is_triggered:
                     print("reset")
-                    if self.augmented_reality.buttonReset.is_triggered:
+                    if self.current_activity.buttonReset.is_triggered:
                         print("(from rst button)")
                     elif self.lost_leak:
                         print("(from liquid)")
@@ -114,30 +142,30 @@ class MainProgram:
                         print("(from struct)")
 
                     self.rst.put(True)
-                    self.augmented_reality.buttonStart.is_triggered = False
+                    self.current_activity.buttonStart.is_triggered = False
                     Glob.t_ref, Glob.delta_t = clock(), 0
                     Glob.hand_text = None
 
                     Glob.updating = False
                     Glob.update_timer = 0
 
-                    self.augmented_reality.buttonReset.is_triggered = False
-                    self.augmented_reality.reset()
+                    self.current_activity.buttonReset.is_triggered = False
+                    self.current_activity.reset()
 
                     Glob.mode = 2
                     self.animation_clock = clock()
-                    self.augmented_reality.buttonStart.is_waiting = True
+                    self.current_activity.buttonStart.is_waiting = True
 
                     self.lost_leak = False
+
+                    # Change scene
+                    self.current_activity = DifficultyAR(self.cam)
 
             # update brick grid in liquid simulation
             if Glob.brick_array is not None:
                 with self.liquid_grid.get_lock():  # synchronize access
                     arr = np.frombuffer(self.liquid_grid.get_obj())  # no data copying
                     arr[:Conf.dim_grille[0] * Conf.dim_grille[1]] = Glob.brick_array.get_grid().flatten()
-
-        # tell OpenGL to redraw as soon as possible
-        glutPostRedisplay()
 
     def display(self):
         """ Opengl drawing function, called when an update is needed"""
@@ -152,19 +180,45 @@ class MainProgram:
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        self.augmented_reality.render()
+        # swap between scene display
+        if type(self.current_activity) == LanguageAR:
+            self.display_language()
+            pass
+        elif type(self.current_activity) == VideoAR:
+            self.display_video()
+            pass
+        elif type(self.current_activity) == DifficultyAR:
+            self.display_difficulty()
+            pass
+        elif type(self.current_activity) == GameAR:
+            self.display_Game()
 
+        glutSwapBuffers()
+
+    def display_language(self):
+        # TODO render language screen here
+        pass
+
+    def display_video(self):
+        # TODO render video screen here
+        pass
+
+    def display_difficulty(self):
+        # TODO render difficulty screen here
+        pass
+
+    def display_Game(self):
+        self.current_activity.render()
         if Glob.mode == 2:
             # reset mode
-            self.augmented_reality.buttonStart.pause()
-            self.augmented_reality.lost_screen()
+            self.current_activity.buttonStart.pause()
+            self.current_activity.lost_screen()
 
             if clock() - self.animation_clock > 5:
                 Glob.mode = 0
         else:
-            self.augmented_reality.buttonStart.unpause()
-
-        glutSwapBuffers()
+            self.current_activity.buttonStart.unpause()
+        pass
 
     @staticmethod
     def reshape(w, h):
