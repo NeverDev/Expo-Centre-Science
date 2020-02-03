@@ -628,32 +628,6 @@ class DrawingHandler:
 
                         # draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h, 1, 1, 1)
 
-                        temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
-                        if temp is not None:
-                            temp = np.mean(temp)
-
-                        text_color = (0, 0, 0)
-                        if 0 < temp < 500:
-                            message = "froid"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
-
-                        elif 500 < temp < 1400:
-                            message = "chaud"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
-
-                        else:
-                            message = "brulant"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
-
                         # Affiche la tempe sur les briques
                         # message = "%0.0f °C" % temp
                         # glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
@@ -712,6 +686,32 @@ class DrawingHandler:
                             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
                             self.shader_handler_brick.unbind()
+
+                        temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
+                        if temp is not None:
+                            temp = np.mean(temp)
+
+                        text_color = (0, 0, 0)
+                        if 0 < temp < 500:
+                            message = "froid"
+                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
+
+                        elif 500 < temp < 1400:
+                            message = "chaud"
+                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
+
+                        else:
+                            message = "brulant"
+                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                       GLUT_BITMAP_HELVETICA_12,
+                                       message, *text_color)
 
         else:
             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
