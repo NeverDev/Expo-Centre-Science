@@ -641,7 +641,6 @@ class DrawingHandler:
                                     message, *text_color)"""
 
                         stress = update_stress(b_xy.indexes[0][1])
-
                         if stress >= 3.06:
                             my_color_meca = [1, 0, 0, 1]
                             self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
