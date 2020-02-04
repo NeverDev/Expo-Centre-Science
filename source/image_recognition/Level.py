@@ -1,27 +1,11 @@
     def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
         super().__init__(cam)
-        # Attributes from parameters
-        self.width, self.liquid_height = width, height
-        self.q_activate = q_activate
-        self.liquid_im = liquid_im
-        self.liquid_grid = liquid_grid
-
-        # Other attributes
-        self.triggered_start, self.triggered_reset = False, False
-        self.wait_time = 1
-        self.liquid_height = 0.0
-        self.clock_liquid = 0.0
-        self.number = -1
-        self.new = False
 
         # Create a texture handler with 6 different textures
         self.tex_handler = TextureHandler(6)
 
         # Create a handler for every drawing functions
-        self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
-
-        # Create a class that will extract "bricks" from image
-        # self.brick_recognition = BrickRecognition(liquid_im)
+        self.draw_handler = DrawingHandler(self.tex_handler, None, None)
 
         # Create button Handler and start them for image detection
         self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonValider = None, None, None, None
@@ -49,21 +33,15 @@
         self.buttonValider.title = "Valider"
 
 
-    def reset(self):
-        """ Reset program state"""
-
-        if self.Corrosion.number > self.draw_handler.previous_number:
-            self.draw_handler.previous_number = self.buttonCorrosion.number
-
-        self.triggered_start, self.triggered_reset = False, False
-        self.wait_time = 1
-
-        self.buttonMecanique.is_triggered, self.buttonMecanique.is_waiting = False, False
-        Glob.brick_array.reset()
-
     def render(self) -> None:
             """ render the scene with OpenGL"""
+            # step 1 : draw buttons interfaces, reset button depends on the mode
+            self.buttonCorrosion.draw()
+            self.buttonMecanique.draw()
+            self.buttonThermique.draw()
+            self.buttonValider.draw()
 
+<<<<<<< HEAD
         if Glob.frame is not None:
                 # Set button text
             if Glob.mode == 0:
@@ -108,6 +86,10 @@
             else:
                 self.buttonMecanique.pause()
                 self.new = True
+=======
+            # + interface draw if needed
+
+>>>>>>> master
 
     def check_buttons(self) -> None:
         """ Update button image and read button state """
@@ -118,6 +100,7 @@
         self.buttonThermique.image = self.cam.image_raw
         self.buttonValider.image = self.cam.image_raw
 
+<<<<<<< HEAD
         # Change mode with button state
         if Glob.mode == 0 and Glob.brick_array is not None:
             self.triggered_number = self.buttonCorrosion.number
@@ -131,3 +114,13 @@
                 Glob.mode = 3
                 return
             pass
+=======
+        if self.buttonCorrosion.is_triggered and not "Corrosion" in Glob.physics:
+            Glob.physics.append("Corrosion")
+        if self.buttonMecanique.is_triggered and not "Mecanique" in Glob.physics:
+            Glob.physics.append("Mecanique")
+        if self.buttonThermique.is_triggered and not "Thermique" in Glob.physics:
+            Glob.physics.append("Thermique")
+        if self.buttonValider.is_triggered and len(Glob.physics) > 0:
+            # change to game
+>>>>>>> master

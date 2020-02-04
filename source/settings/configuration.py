@@ -68,4 +68,6 @@ class Globals:
     updating = False
     update_timer = 0
 
+    physics = []
+
     mode = 0
