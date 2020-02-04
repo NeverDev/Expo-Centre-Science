@@ -1,4 +1,3 @@
-
     def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
         super().__init__(cam)
         # Attributes from parameters
@@ -70,20 +69,20 @@
             if Glob.mode == 0:
                 self.draw_handler.q = 0.0
                 self.number = -1
-                self.buttonStart.title = "VALIDER"
-            elif self.buttonStart.is_ready():
-                self.buttonStart.title = "CONTINUER"
+                self.buttonCorrosion.title = "VALIDER"
+            elif self.buttonCorrosion.is_ready():
+                self.buttonCorrosion.title = "CONTINUER"
             else:
-                self.buttonStart.title = "%i" % self.buttonStart.remaining_time
+                self.buttonCorrosion.title = "%i" % self.buttonStart.remaining_time
 
             if self.number == -1:
-                self.buttonStart.wait_time = 1
+                self.buttonCorrosion.wait_time = 1
             else:
-                self.buttonStart.wait_time = 10
+                self.buttonCorrosion.wait_time = 10
 
             # Set liquid state from buttons
             poor_liquid = False
-            if self.buttonStart.is_triggered and self.number >= 0:
+            if self.buttonCorrosion.is_triggered and self.number >= 0:
                 poor_liquid = True
 
             # step 1 : draw background
@@ -95,19 +94,19 @@
             self.draw_handler.draw_molten_steel(x0, y0, xf - x0, yf - y0, 1, 1, 1, poor_liquid)
 
             # step 3 : draw user interface
-            self.draw_handler.draw_ui(start_button=self.buttonStart, number=max(0, self.number))
+            self.draw_handler.draw_ui(start_button=self.buttonCorrosion, number=max(0, self.number))
 
             # step 4 : draw buttons interfaces, reset button depends on the mode
-            self.buttonStart.draw()
-            if Glob.mode == 1 and self.buttonStart.is_ready():
+            self.buttonCorrosion.draw()
+            if Glob.mode == 1 and self.buttonCorrosion.is_ready():
                 if self.new:
                     self.number += 1
                     self.draw_handler.q += Glob.brick_array.current_steel_volume()
                     self.new = False
-                self.buttonReset.unpause()
-                self.buttonReset.draw()
+                self.buttonMecanique.unpause()
+                self.buttonMecanique.draw()
             else:
-                self.buttonReset.pause()
+                self.buttonMecanique.pause()
                 self.new = True
 
     def check_buttons(self) -> None:
@@ -121,7 +120,7 @@
 
         # Change mode with button state
         if Glob.mode == 0 and Glob.brick_array is not None:
-            self.triggered_number = self.buttonStart.number
+            self.triggered_number = self.buttonCorrosion.number
 
             if self.buttonCorrosion.is_triggered:
                 Glob.mode = 3
