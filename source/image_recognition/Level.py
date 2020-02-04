@@ -41,7 +41,7 @@
             self.buttonThermique.draw()
             self.buttonValider.draw()
 
-<<<<<<< HEAD
+"""<<<<<<< HEAD
         if Glob.frame is not None:
                 # Set button text
             if Glob.mode == 0:
@@ -88,7 +88,7 @@
                 self.new = True
 =======
             # + interface draw if needed
-
+"""
 >>>>>>> master
 
     def check_buttons(self) -> None:
@@ -99,7 +99,7 @@
         self.buttonMecanique.image = self.cam.image_raw
         self.buttonThermique.image = self.cam.image_raw
         self.buttonValider.image = self.cam.image_raw
-
+"""
 <<<<<<< HEAD
         # Change mode with button state
         if Glob.mode == 0 and Glob.brick_array is not None:
@@ -114,7 +114,7 @@
                 Glob.mode = 3
                 return
             pass
-=======
+======="""
         if self.buttonCorrosion.is_triggered and not "Corrosion" in Glob.physics:
             Glob.physics.append("Corrosion")
         if self.buttonMecanique.is_triggered and not "Mecanique" in Glob.physics:
