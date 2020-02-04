@@ -25,32 +25,36 @@
         # self.brick_recognition = BrickRecognition(liquid_im)
 
         # Create button Handler and start them for image detection
-        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique = None, None, None
+        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonValider = None, None, None, None
         self.init_start_buttons()
 
     def init_start_buttons(self):
         self.buttonCorrosion = HandButton(0, None, 3, Conf.hand_area_3, Conf.hand_threshold_1)
         self.buttonMecanique = HandButton(1, None, 1, Conf.hand_area_4, Conf.hand_threshold_2)
         self.buttonThermique = HandButton(1, None, 1, Conf.hand_area_5, Conf.hand_threshold_2)
+        self.buttonValider = HandButton(1, None, 1, Conf.hand_area_6, Conf.hand_threshold_2)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True
         self.buttonThermique.daemon = True
+        self.buttonValider.daemon = True
 
         self.buttonCorrosion.start()
         self.buttonMecanique.start()
         self.buttonThermique.start()
+        self.buttonValider.start()
 
         self.buttonCorrosion.title = "Corrosion"
         self.buttonMecanique.title = "Mécanique"
         self.buttonThermique.title = "Thermique"
+        self.buttonValider.title = "Valider"
 
 
     def reset(self):
         """ Reset program state"""
 
-        if self.buttonStart.number > self.draw_handler.previous_number:
-            self.draw_handler.previous_number = self.buttonStart.number
+        if self.Corrosion.number > self.draw_handler.previous_number:
+            self.draw_handler.previous_number = self.buttonCorrosion.number
 
         self.triggered_start, self.triggered_reset = False, False
         self.wait_time = 1
@@ -113,6 +117,7 @@
         self.buttonCorrosion.image = self.cam.image_raw
         self.buttonMecanique.image = self.cam.image_raw
         self.buttonThermique.image = self.cam.image_raw
+        self.buttonValider.image = self.cam.image_raw
 
         # Change mode with button state
         if Glob.mode == 0 and Glob.brick_array is not None:
