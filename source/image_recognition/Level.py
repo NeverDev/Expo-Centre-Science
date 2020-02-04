@@ -1,7 +1,7 @@
 
     def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
         super().__init__(cam)
-
+        #
         # Create a texture handler with 6 different textures
         self.tex_handler = TextureHandler(6)
 
