@@ -14,10 +14,10 @@ camera:
 button:
   hand_area_1: [[400, 920], [500, 1000]]
   hand_area_2: [[200, 10], [300, 80]]
-  hand_area_3: [[300, 500], [400, 500]]
-  hand_area_4: [[400, 500], [400, 500]]
-  hand_area_5: [[700, 500], [400, 500]]
-  hand_area_6: [[800, 500], [400, 500]]
+  hand_area_3: [[450, 920], [500, 1000]]
+  hand_area_4: [[350, 920], [400, 1000]]
+  hand_area_5: [[250, 920], [300, 1000]]
+  hand_area_6: [[150, 920], [200, 1000]]
 
 
   # increase if buttons trigger for nothing

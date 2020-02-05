@@ -226,10 +226,6 @@ class VideoAR(AugmentedReality):
 # Difficulty Scene
 class DifficultyAR(AugmentedReality):
 
-    def render(self):
-        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "DIFFICULTY", 0, 1, 0)
-        pass
-
     def __init__(self, cam) -> None:
         super().__init__(cam)
 
@@ -267,6 +263,7 @@ class DifficultyAR(AugmentedReality):
     def render(self) -> None:
         """ render the scene with OpenGL"""
         # step 1 : draw buttons interfaces, reset button depends on the mode
+        draw_rectangle(0, 0, Conf.width, Conf.height, 0.2, 0.2, 0.2)
         self.buttonCorrosion.draw()
         self.buttonMecanique.draw()
         self.buttonThermique.draw()
