@@ -75,3 +75,5 @@ class Globals:
     physics = []
 
     mode = 0
+
+    stress_active = False

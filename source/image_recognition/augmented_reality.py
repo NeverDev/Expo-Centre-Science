@@ -219,14 +219,12 @@ class VideoAR(AugmentedReality):
                 glEnable(GL_TEXTURE_2D)
                 self.tex_handler.bind_texture(1, frame, Conf.width, Conf.height)
                 self.tex_handler.use_texture(1)
-                draw_textured_rectangle(0, 0, Conf.width, Conf.height)
+                draw_textured_rectangle(0, 0, Conf.width-100, Conf.height-100)
                 glDisable(GL_TEXTURE_2D)
 
 
 # Difficulty Scene
 class DifficultyAR(AugmentedReality):
-    def __init__(self, cam) -> None:
-        super().__init__(cam)
 
     def __init__(self, cam) -> None:
         super().__init__(cam)
@@ -271,7 +269,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.draw()
         self.buttonValider.draw()
 
-    def check_buttons(self) -> None:
+    def check_buttons(self) -> bool:
         """ Update button image and read button state """
 
         # Set image to the newest one
@@ -287,7 +285,10 @@ class DifficultyAR(AugmentedReality):
         if self.buttonThermique.is_triggered and not "Thermique" in Glob.physics:
             Glob.physics.append("Thermique")
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
-            pass
+            return True
+
+        return False
+
     # change to game
 
 
@@ -635,7 +636,7 @@ class DrawingHandler:
                                    (Conf.dim_grille[1] - l - 1) * step_y + .3 * step_y, GLUT_BITMAP_HELVETICA_18, txt,
                                    1, 1, 1)
 
-    def draw_temperatures(self, x_s: int, y_s: int, bricks) -> None:
+    def draw_temperatures(self, x_s: int, y_s: int, bricks, start_button: HandButton) -> None:
         glut_print(0, 100, GLUT_BITMAP_HELVETICA_18, "Temperatures", *Conf.text_color)
 
         _range = 2 if Glob.mode == 1 else 1
@@ -698,51 +699,52 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
 
-                        stress = update_stress(b_xy.indexes[0][1])
-                        if stress >= 3.06:
-                            my_color_meca = [1, 0, 0, 1]
-                            self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
-                                                            "temp_buffer": temp_array.flatten(),
-                                                            "brick_dim": [Glob.brick_array.step_x,
-                                                                          Glob.brick_array.step_y],
-                                                            "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                            "border": border,
-                                                            "color_meca": my_color_meca})
+                        if not start_button.is_ready():
+                            stress = update_stress(b_xy.indexes[0][1])
+                            if stress >= 3.06:
+                                my_color_meca = [1, 0, 0, 1]
+                                self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
+                                                                "temp_buffer": temp_array.flatten(),
+                                                                "brick_dim": [Glob.brick_array.step_x,
+                                                                              Glob.brick_array.step_y],
+                                                                "grid_pos": pos, "step": Glob.brick_array.nx,
+                                                                "border": border,
+                                                                "color_meca": my_color_meca})
 
-                            # gradient
-                            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                # gradient
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
-                            self.shader_handler_brick.unbind()
+                                self.shader_handler_brick.unbind()
 
-                        elif 1 <= stress < 3.06:
-                            my_color_meca = [1, 0.5, 0, 1]
-                            self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
-                                                            "temp_buffer": temp_array.flatten(),
-                                                            "brick_dim": [Glob.brick_array.step_x,
-                                                                          Glob.brick_array.step_y],
-                                                            "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                            "border": border,
-                                                            "color_meca": my_color_meca
-                                                            })
+                            elif 1 <= stress < 3.06:
+                                my_color_meca = [1, 0.5, 0, 1]
+                                self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
+                                                                "temp_buffer": temp_array.flatten(),
+                                                                "brick_dim": [Glob.brick_array.step_x,
+                                                                              Glob.brick_array.step_y],
+                                                                "grid_pos": pos, "step": Glob.brick_array.nx,
+                                                                "border": border,
+                                                                "color_meca": my_color_meca
+                                                                })
 
-                            # gradient
-                            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                # gradient
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
-                            self.shader_handler_brick.unbind()
+                                self.shader_handler_brick.unbind()
 
-                        elif 0 <= stress < 1:
-                            my_color_meca = [0, 1, 0, 1]
-                            self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
-                                                            "temp_buffer": temp_array.flatten(),
-                                                            "brick_dim": [Glob.brick_array.step_x,
-                                                                          Glob.brick_array.step_y],
-                                                            "grid_pos": pos, "step": Glob.brick_array.nx,
-                                                            "border": border, "color_meca": my_color_meca})
+                            elif 0 <= stress < 1:
+                                my_color_meca = [0, 1, 0, 1]
+                                self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
+                                                                "temp_buffer": temp_array.flatten(),
+                                                                "brick_dim": [Glob.brick_array.step_x,
+                                                                              Glob.brick_array.step_y],
+                                                                "grid_pos": pos, "step": Glob.brick_array.nx,
+                                                                "border": border, "color_meca": my_color_meca})
 
-                            # gradient
-                            draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                # gradient
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
 
-                            self.shader_handler_brick.unbind()
+                                self.shader_handler_brick.unbind()
 
                         temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
                         if temp is not None:
@@ -816,7 +818,8 @@ class DrawingHandler:
 
             else:
                 if number != -1:
-                    self.draw_temperatures(Conf.cam_area[0][1], 0, Glob.brick_array)
+                    print(number)
+                    self.draw_temperatures(Conf.cam_area[0][1], 0, Glob.brick_array, start_button)
                     if start_button.is_ready():
                         title = strings['title_test']
                         subtitle = strings['sub_title_test1i'] % number

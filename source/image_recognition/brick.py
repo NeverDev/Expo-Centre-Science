@@ -5,13 +5,14 @@ from source.settings.configuration import Config as Conf
 from source.physics.heat_equation import HeatEquation
 from source.physics.corrosion_equation import update_corrosion
 from source.physics.mechanics import update_stress
-
+from source.settings.configuration import Globals as Glob
 
 class Brick:
     """  Represent an element of the grid """
+
     def __init__(self, box=None, color=None, indexes=None):
-        self.is_invalid = False   # True when this brick isn't on the grid anymore
-        self.drowned = False      # True when liquid can pass through it
+        self.is_invalid = False  # True when this brick isn't on the grid anymore
+        self.drowned = False  # True when liquid can pass through it
 
         # instantiate brick properties
         if color is None:  # void brick
@@ -20,7 +21,7 @@ class Brick:
             self.indexes = indexes
             self.is_void = True
             self.drowned = True
-        else:   # true brick
+        else:  # true brick
             self.material = BrickMaterial(color)
             self.geometry = BrickGeometry(box)
             self.indexes = self.geometry.compute_indexes()
@@ -64,6 +65,7 @@ class Brick:
 
 class BrickGeometry:
     """ Geometric properties of a brick"""
+
     def __init__(self, box):
         # extract values of box, change angle to avoid bad behaviour in drawing
         if box[2] > -45:
@@ -78,8 +80,8 @@ class BrickGeometry:
     def compute_indexes(self):
         """ compute indexes from brick position and grid parameters"""
         indexes = []
-        x_index = int(((self.xStart + .5*self.width) / (Conf.width / Conf.dim_grille[0])))
-        y_index = int(((self.yStart + .5*self.length) / (Conf.height / Conf.dim_grille[1])))
+        x_index = int(((self.xStart + .5 * self.width) / (Conf.width / Conf.dim_grille[0])))
+        y_index = int(((self.yStart + .5 * self.length) / (Conf.height / Conf.dim_grille[1])))
         indexes.append([x_index, y_index])
 
         # # Deprecated atm
@@ -106,7 +108,8 @@ class BrickMaterial:
     def __init__(self, color=-1):
         self.color_name = Conf.color_dict[color]
         self.color = cv2.cvtColor(np.uint8([[[color / 2, 50, 255]]]), cv2.COLOR_HLS2RGB).flatten() / 255.0
-        self.conductivity, self.capacity, self.density, self.r_cor, self.stress, self.T_max = Conf.color_to_mat[self.color_name]
+        self.conductivity, self.capacity, self.density, self.r_cor, self.stress, self.T_max = Conf.color_to_mat[
+            self.color_name]
         self.is_broken = False if color >= 0 else True
         self.health = 1.4
         self.T = [0]  # °K
@@ -132,8 +135,8 @@ class BrickArray:
                     b = Brick.void([[i, j]])
                 self.array[i][j] = b
 
-        self.w = Conf.dim_grille[0]/10  # m
-        self.h = Conf.dim_grille[1]/10  # m
+        self.w = Conf.dim_grille[0] / 10  # m
+        self.h = Conf.dim_grille[1] / 10  # m
         self.dx = 0.01  # m / points
         self.dy = 0.01  # m / points
         self.nx, self.ny = int(np.ceil(self.w / self.dx)), int(np.ceil(self.h / self.dy))  # points
@@ -152,7 +155,7 @@ class BrickArray:
             return None
 
     def set(self, i: int, j: int, value: Brick or None) -> void:
-        i, j = min(Conf.dim_grille[0]-1, i), min(Conf.dim_grille[1]-1, j)
+        i, j = min(Conf.dim_grille[0] - 1, i), min(Conf.dim_grille[1] - 1, j)
         self.array[i][j] = value
 
     def clear(self) -> void:
@@ -294,9 +297,10 @@ class BrickArray:
                             if len(self.get_temp(*n.indexes[0])) > 0:
                                 if n.drowned and np.nanmax(self.get_temp(*n.indexes[0])) > 1500:
                                     brick.update_corrosion(self.heq.dt)
-                                                                        
-                                    if brick.material.health <= 0.0 or np.max(self.get_temp(i, j)) >= brick.material.T_max or update_stress(brick.indexes[0][1]
-)>= brick.material.stress :
+
+                                    if brick.material.health <= 0.0 and "Corrosion" in Glob.physics\
+                                            or np.max(self.get_temp(i, j)) >= brick.material.T_max and "Thermique" in Glob.physics \
+                                            or update_stress(brick.indexes[0][1]) >= brick.material.stress and "Mécanique" in Glob.physics:
                                         brick.material.is_broken = True
 
                 for i in range(Conf.dim_grille[0]):
@@ -313,9 +317,7 @@ class BrickArray:
                 for i in range(speed):
                     self.heq.evolve_ts()
                     self.sim_time += self.heq.dt
-     # MECA UPDATE
-
-
+        # MECA UPDATE
 
         self.update_eq()
 
@@ -325,7 +327,7 @@ class BrickArray:
             c = len(arr[arr > 0.0])
             # print(np.shape(arr), c)
 
-        self.quantity = max(c / (300), self.quantity)
+        self.quantity = max(c * 0.1375, self.quantity)
 
     def reset(self) -> void:
         """ reset grid state"""
@@ -360,7 +362,7 @@ class BrickArray:
         for b in self.array.flatten():
             if b.drowned:
                 for index in b.indexes:
-                    test = True if index[0] >= Conf.dim_grille[0]-1 or index[1] >= Conf.dim_grille[1]-1 else test
+                    test = True if index[0] >= Conf.dim_grille[0] - 1 or index[1] >= Conf.dim_grille[1] - 1 else test
         return test
 
     def get_grid(self):

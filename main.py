@@ -44,9 +44,9 @@ class MainProgram:
         self.cam = Camera(Conf.width, Conf.height)
 
         # Main utility class
-        # self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-        #                               self.liquid_im, self.liquid_grid)
-        self.current_activity = LanguageAR(self.cam)
+        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                      self.liquid_im, self.liquid_grid)
+        # self.current_activity = LanguageAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -122,6 +122,11 @@ class MainProgram:
 
     def idle_difficulty(self):
 
+        if self.current_activity.check_buttons():
+            self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                           self.liquid_im, self.liquid_grid)
+
+        """
         # Timer Example
         if self.timer is None:
             self.timer = 10  # Seconds
@@ -133,6 +138,7 @@ class MainProgram:
             # Back to game scene when difficulty is over
             self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
                                            self.liquid_im, self.liquid_grid)
+        """
         pass
 
     def idle_game(self):
