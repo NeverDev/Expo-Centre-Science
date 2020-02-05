@@ -225,6 +225,8 @@ class VideoAR(AugmentedReality):
 
 # Difficulty Scene
 class DifficultyAR(AugmentedReality):
+    def __init__(self, cam) -> None:
+        super().__init__(cam)
 
     def __init__(self, cam) -> None:
         super().__init__(cam)
