@@ -225,13 +225,12 @@ class VideoAR(AugmentedReality):
 
 # Difficulty Scene
 class DifficultyAR(AugmentedReality):
-    def __init__(self, cam) -> None:
-        super().__init__(cam)
 
     def render(self):
         glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "DIFFICULTY", 0, 1, 0)
         pass
-    def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
+
+    def __init__(self, cam) -> None:
         super().__init__(cam)
 
         # Create a texture handler with 6 different textures
@@ -265,15 +264,13 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.title = "Thermique"
         self.buttonValider.title = "Valider"
 
-
     def render(self) -> None:
-            """ render the scene with OpenGL"""
-            # step 1 : draw buttons interfaces, reset button depends on the mode
-            self.buttonCorrosion.draw()
-            self.buttonMecanique.draw()
-            self.buttonThermique.draw()
-            self.buttonValider.draw()
-
+        """ render the scene with OpenGL"""
+        # step 1 : draw buttons interfaces, reset button depends on the mode
+        self.buttonCorrosion.draw()
+        self.buttonMecanique.draw()
+        self.buttonThermique.draw()
+        self.buttonValider.draw()
 
     def check_buttons(self) -> None:
         """ Update button image and read button state """
@@ -291,7 +288,9 @@ class DifficultyAR(AugmentedReality):
         if self.buttonThermique.is_triggered and not "Thermique" in Glob.physics:
             Glob.physics.append("Thermique")
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
-            # change to game
+            pass
+    # change to game
+
 
 # other classes
 
