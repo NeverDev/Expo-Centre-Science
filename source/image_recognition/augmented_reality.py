@@ -236,28 +236,32 @@ class DifficultyAR(AugmentedReality):
         self.draw_handler = DrawingHandler(self.tex_handler, None, None)
 
         # Create button Handler and start them for image detection
-        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonValider = None, None, None, None
+        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider = None, None, None, None, None
         self.init_start_buttons()
 
     def init_start_buttons(self):
         self.buttonCorrosion = HandButton(0, self.tex_handler, 3, Conf.hand_area_3, Conf.hand_threshold_1)
         self.buttonMecanique = HandButton(1, self.tex_handler, 4, Conf.hand_area_4, Conf.hand_threshold_2)
         self.buttonThermique = HandButton(1, self.tex_handler, 5, Conf.hand_area_5, Conf.hand_threshold_2)
-        self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_6, Conf.hand_threshold_2)
+        self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
+        self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True
         self.buttonThermique.daemon = True
+        self.buttonMulti.daemon = True
         self.buttonValider.daemon = True
 
         self.buttonCorrosion.start()
         self.buttonMecanique.start()
         self.buttonThermique.start()
+        self.buttonMulti.start()
         self.buttonValider.start()
 
-        self.buttonCorrosion.title = "Corrosion"
-        self.buttonMecanique.title = "Mécanique"
-        self.buttonThermique.title = "Thermique"
+        self.buttonCorrosion.title = "Thermique"
+        self.buttonMecanique.title = "Mécanique + Thermique"
+        self.buttonThermique.title = "Corrosion + Thermique"
+        self.buttonMulti.title = "Corrosion + Thermique + Mécanique"
         self.buttonValider.title = "Valider"
 
     def render(self) -> None:
@@ -267,6 +271,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonCorrosion.draw()
         self.buttonMecanique.draw()
         self.buttonThermique.draw()
+        self.buttonMulti.draw()
         self.buttonValider.draw()
 
     def check_buttons(self) -> bool:
@@ -276,13 +281,16 @@ class DifficultyAR(AugmentedReality):
         self.buttonCorrosion.image = self.cam.image_raw
         self.buttonMecanique.image = self.cam.image_raw
         self.buttonThermique.image = self.cam.image_raw
+        self.buttonMulti.image = self.cam.image_raw
         self.buttonValider.image = self.cam.image_raw
 
-        if self.buttonCorrosion.is_triggered and not "Corrosion" in Glob.physics:
-            Glob.physics.append("Corrosion")
-        if self.buttonMecanique.is_triggered and not "Mecanique" in Glob.physics:
+        if self.buttonCorrosion.is_triggered and not "Thermique" in Glob.physics:
+            Glob.physics.append("Thermique")
+        if self.buttonMecanique.is_triggered and not "Mécanique + Thermique" in Glob.physics:
             Glob.physics.append("Mecanique")
-        if self.buttonThermique.is_triggered and not "Thermique" in Glob.physics:
+        if self.buttonThermique.is_triggered and not "Corrosion + Thermique " in Glob.physics:
+            Glob.physics.append("Thermique")
+        if self.buttonMulti.is_triggered and not "Corrosion + Thermique + Mécanique" in Glob.physics:
             Glob.physics.append("Thermique")
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
             return True
