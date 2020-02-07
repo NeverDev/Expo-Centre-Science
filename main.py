@@ -110,6 +110,8 @@ class MainProgram:
 
     def idle_difficulty(self):
 
+        self.current_activity.cam.take_frame()
+
         if self.current_activity.check_buttons():
             self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
                                            self.liquid_im, self.liquid_grid)

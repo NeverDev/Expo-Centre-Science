@@ -230,7 +230,7 @@ class DifficultyAR(AugmentedReality):
         super().__init__(cam)
 
         # Create a texture handler with 6 different textures
-        self.tex_handler = TextureHandler(6)
+        self.tex_handler = TextureHandler(7)
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, None, None)
@@ -240,10 +240,10 @@ class DifficultyAR(AugmentedReality):
         self.init_start_buttons()
 
     def init_start_buttons(self):
-        self.buttonCorrosion = HandButton(0, None, 3, Conf.hand_area_3, Conf.hand_threshold_1)
-        self.buttonMecanique = HandButton(1, None, 1, Conf.hand_area_4, Conf.hand_threshold_2)
-        self.buttonThermique = HandButton(1, None, 1, Conf.hand_area_5, Conf.hand_threshold_2)
-        self.buttonValider = HandButton(1, None, 1, Conf.hand_area_6, Conf.hand_threshold_2)
+        self.buttonCorrosion = HandButton(0, self.tex_handler, 3, Conf.hand_area_3, Conf.hand_threshold_1)
+        self.buttonMecanique = HandButton(1, self.tex_handler, 4, Conf.hand_area_4, Conf.hand_threshold_2)
+        self.buttonThermique = HandButton(1, self.tex_handler, 5, Conf.hand_area_5, Conf.hand_threshold_2)
+        self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_6, Conf.hand_threshold_2)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True

@@ -102,15 +102,12 @@ class HandButton(Thread):
                 triggered = True
             cv2.fillPoly(crop, pts=[c], color=(255, 0, 0, 255))
 
-        y0, x0 = self.hand_area[0]
-        yf, xf = self.hand_area[1]
-        if self.tex_handler is not None:
-            glEnable(GL_TEXTURE_2D)
-            self.tex_handler.bind_texture(self.tex_loc, cv2.flip(crop, 0), Conf.width, Conf.height)
+        self.crop = crop
 
         return triggered
 
     def draw(self):
+        print("draw")
         y0, x0 = self.hand_area[0]
         yf, xf = self.hand_area[1]
         if self.is_triggered:
@@ -123,8 +120,10 @@ class HandButton(Thread):
         glut_print(x0 + .5 * (xf - x0) - 6 * len(self.title),
                    Conf.height - y0 + 10, GLUT_BITMAP_HELVETICA_18, self.title, *Conf.text_color)
 
-        if self.tex_handler is not None:
+        if self.tex_handler is not None and self.crop is not None:
             glEnable(GL_TEXTURE_2D)
+            size = np.shape(self.crop)[:2]
+            self.tex_handler.bind_texture(self.tex_loc, cv2.flip(self.crop, 0), size[1], size[0])
             self.tex_handler.use_texture(self.tex_loc)
             draw_textured_rectangle(x0, Conf.height - yf - (yf - y0), xf - x0, yf - y0)
             glDisable(GL_TEXTURE_2D)
