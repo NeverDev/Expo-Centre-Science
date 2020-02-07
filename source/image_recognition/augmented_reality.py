@@ -219,7 +219,7 @@ class VideoAR(AugmentedReality):
                 glEnable(GL_TEXTURE_2D)
                 self.tex_handler.bind_texture(1, frame, Conf.width, Conf.height)
                 self.tex_handler.use_texture(1)
-                draw_textured_rectangle(0, 0, Conf.width-100, Conf.height-100)
+                draw_textured_rectangle(0, 0, Conf.width-200, Conf.height-100)
                 glDisable(GL_TEXTURE_2D)
 
 

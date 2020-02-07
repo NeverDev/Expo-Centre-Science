@@ -46,7 +46,7 @@ class MainProgram:
         # Main utility class
         self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
                                       self.liquid_im, self.liquid_grid)
-        # self.current_activity = LanguageAR(self.cam)
+        self.current_activity = VideoAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -93,18 +93,6 @@ class MainProgram:
         # tell OpenGL to redraw as soon as possible
         glutPostRedisplay()
 
-    def idle_language(self):
-        # Timer Example
-        if self.timer is None:
-            self.timer = 1  # Seconds
-        elif self.timer > 0:
-            self.timer -= Glob.delta_t
-
-        else:
-            self.timer = None
-            # Back to game scene when difficulty is over
-            self.current_activity = VideoAR(self.cam)
-        pass
 
     def idle_video(self):
 
