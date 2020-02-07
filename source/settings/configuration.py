@@ -33,6 +33,8 @@ class Config:
     hand_area_4 = section["hand_area_4"]
     hand_area_5 = section["hand_area_5"]
     hand_area_6 = section["hand_area_6"]
+    hand_area_7 = section["hand_area_7"]
+
     hand_threshold_1 = section["hand_threshold_1"]
     hand_threshold_2 = section["hand_threshold_2"]
     cooldown = section["cooldown"]

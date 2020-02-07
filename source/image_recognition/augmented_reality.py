@@ -1,6 +1,6 @@
 import time
 from source.image_recognition.brick import Brick, BrickArray
-from time import process_time as clock
+from time import perf_counter as clock
 from source.settings.configuration import Globals as Glob
 from source.image_recognition.image_tools import *
 from source.image_recognition.drawing import *
@@ -240,9 +240,9 @@ class DifficultyAR(AugmentedReality):
         self.init_start_buttons()
 
     def init_start_buttons(self):
-        self.buttonCorrosion = HandButton(0, self.tex_handler, 3, Conf.hand_area_3, Conf.hand_threshold_1)
-        self.buttonMecanique = HandButton(1, self.tex_handler, 4, Conf.hand_area_4, Conf.hand_threshold_2)
-        self.buttonThermique = HandButton(1, self.tex_handler, 5, Conf.hand_area_5, Conf.hand_threshold_2)
+        self.buttonCorrosion = HandButton(0, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
+        self.buttonMecanique = HandButton(1, self.tex_handler, 3, Conf.hand_area_4, Conf.hand_threshold_2)
+        self.buttonThermique = HandButton(1, self.tex_handler, 4, Conf.hand_area_5, Conf.hand_threshold_2)
         self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
         self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
 
@@ -284,14 +284,14 @@ class DifficultyAR(AugmentedReality):
         self.buttonMulti.image = self.cam.image_raw
         self.buttonValider.image = self.cam.image_raw
 
-        if self.buttonCorrosion.is_triggered and not "Thermique" in Glob.physics:
-            Glob.physics.append("Thermique")
-        if self.buttonMecanique.is_triggered and not "Mécanique + Thermique" in Glob.physics:
-            Glob.physics.append("Mecanique")
-        if self.buttonThermique.is_triggered and not "Corrosion + Thermique " in Glob.physics:
-            Glob.physics.append("Thermique")
-        if self.buttonMulti.is_triggered and not "Corrosion + Thermique + Mécanique" in Glob.physics:
-            Glob.physics.append("Thermique")
+        if self.buttonCorrosion.is_triggered:
+            Glob.physics = ["Thermique"]
+        if self.buttonMecanique.is_triggered:
+            Glob.physics = ["Mécanique", "Thermique"]
+        if self.buttonThermique.is_triggered:
+            Glob.physics = ["Corrosion", "Thermique"]
+        if self.buttonMulti.is_triggered:
+            Glob.physics = ["Corrosion", "Thermique", "Mécanique"]
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
             return True
 

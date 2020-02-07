@@ -1,5 +1,5 @@
 from threading import Thread
-from time import sleep, process_time as clock
+from time import sleep, perf_counter as clock
 from source.image_recognition.drawing import *
 from source.image_recognition.image_tools import *
 from source.settings.configuration import Config as Conf
@@ -107,7 +107,6 @@ class HandButton(Thread):
         return triggered
 
     def draw(self):
-        print("draw")
         y0, x0 = self.hand_area[0]
         yf, xf = self.hand_area[1]
         if self.is_triggered:
