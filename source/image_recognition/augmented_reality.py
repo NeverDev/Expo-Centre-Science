@@ -767,7 +767,7 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
 
-                        if not start_button.is_ready() and "Mecanique" in Glob.physics:
+                        if not start_button.is_ready() and "Mécanique" in Glob.physics:
                             stress = update_stress(b_xy.indexes[0][1])
                             if stress >= 3.06:
                                 my_color_meca = [1, 0, 0, 1]
