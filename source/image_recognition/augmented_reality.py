@@ -29,6 +29,7 @@ class GameAR(AugmentedReality):
 
     def __init__(self, cam, width: int, height: int, q_activate: SimpleQueue, liquid_im, liquid_grid) -> None:
         super().__init__(cam)
+        Glob.death_text = ""
         # Attributes from parameters
         self.width, self.liquid_height = width, height
         self.q_activate = q_activate
@@ -44,7 +45,12 @@ class GameAR(AugmentedReality):
         self.new = False
 
         # Create a texture handler with 6 different textures
-        self.tex_handler = TextureHandler(6)
+        self.tex_handler = TextureHandler(12)
+        # self.image_1 = cv2.imread("./..")
+        # size = np.shape(self.image_1)[:2]
+        # self.tex_handler.bind_texture(9, self.image_1, size[0], size[1])
+        # x3
+
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
@@ -202,7 +208,7 @@ class LanguageAR(AugmentedReality):
 class VideoAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
-        self.tex_handler = TextureHandler(2)
+        self.tex_handler = TextureHandler(3)
         self.draw_handler = DrawingHandler(self.tex_handler)
         self.video_path = "./ressources/poche.mp4"
         self.video_cap = cv2.VideoCapture(self.video_path)
@@ -210,11 +216,10 @@ class VideoAR(AugmentedReality):
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, None, None)
         # Create button Handler and start them for image detection
-        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider = None, None, None, None, None
+        self.buttonJeu = None
         self.init_start_buttons()
 
-
-    def render(self):
+    def render_video(self):
         glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
         if self.video_cap.isOpened():
             ret, frame = self.video_cap.read()
@@ -226,7 +231,7 @@ class VideoAR(AugmentedReality):
                 glEnable(GL_TEXTURE_2D)
                 self.tex_handler.bind_texture(1, frame, Conf.width, Conf.height)
                 self.tex_handler.use_texture(1)
-                draw_textured_rectangle(0, 0, Conf.width-200, Conf.height-100)
+                draw_textured_rectangle(0, 0, Conf.width - 200, Conf.height - 100)
                 glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
@@ -240,11 +245,15 @@ class VideoAR(AugmentedReality):
         # step 1 : draw buttons interfaces, reset button depends on the mode
         draw_rectangle(0, 0, Conf.width, Conf.height, 0.2, 0.2, 0.2)
         self.buttonJeu.draw()
+        self.render_video()
 
     def check_buttons(self) -> bool:
         """ Update button image and read button state """
         # Set image to the newest one
         self.buttonJeu.image = self.cam.image_raw
+        if self.buttonJeu.is_triggered:
+            return True
+        return False
 
 
 # Difficulty Scene
@@ -262,6 +271,8 @@ class DifficultyAR(AugmentedReality):
         # Create button Handler and start them for image detection
         self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider = None, None, None, None, None
         self.init_start_buttons()
+
+        self.active_button = None
 
     def init_start_buttons(self):
         self.buttonCorrosion = HandButton(0, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
@@ -281,6 +292,8 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.start()
         self.buttonMulti.start()
         self.buttonValider.start()
+
+        Glob.physics = []
 
         self.buttonCorrosion.title = "Thermique"
         self.buttonMecanique.title = "Mécanique + Thermique"
@@ -311,12 +324,32 @@ class DifficultyAR(AugmentedReality):
 
         if self.buttonCorrosion.is_triggered:
             Glob.physics = ["Thermique"]
+            if self.active_button is not None:
+                self.active_button.unpause()
+            self.buttonCorrosion.pause()
+            self.active_button = self.buttonCorrosion
+
         if self.buttonMecanique.is_triggered:
             Glob.physics = ["Mécanique", "Thermique"]
+            if self.active_button is not None:
+                self.active_button.unpause()
+            self.buttonCorrosion.pause()
+            self.active_button = self.buttonMecanique
+
         if self.buttonThermique.is_triggered:
             Glob.physics = ["Corrosion", "Thermique"]
+            if self.active_button is not None:
+                self.active_button.unpause()
+            self.buttonCorrosion.pause()
+            self.active_button = self.buttonThermique
+
         if self.buttonMulti.is_triggered:
             Glob.physics = ["Corrosion", "Thermique", "Mécanique"]
+            if self.active_button is not None:
+                self.active_button.unpause()
+            self.buttonCorrosion.pause()
+            self.active_button = self.buttonMulti
+
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
             return True
 
@@ -704,7 +737,9 @@ class DrawingHandler:
                             border += 2
 
                         my_color_meca = [1, 1, 1, 1]
-                        self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
+
+                        corrosion = b_xy.material.health if "Corrosion" in Glob.physics else 1
+                        self.shader_handler_brick.bind({"Corrosion": corrosion if i == 1 else 1,
                                                         "temp_buffer": temp_array.flatten(),
                                                         "brick_dim": [Glob.brick_array.step_x, Glob.brick_array.step_y],
                                                         "grid_pos": pos, "step": Glob.brick_array.nx,
@@ -732,7 +767,7 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
 
-                        if not start_button.is_ready():
+                        if not start_button.is_ready() and "Mecanique" in Glob.physics:
                             stress = update_stress(b_xy.indexes[0][1])
                             if stress >= 3.06:
                                 my_color_meca = [1, 0, 0, 1]
@@ -745,7 +780,8 @@ class DrawingHandler:
                                                                 "color_meca": my_color_meca})
 
                                 # gradient
-                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step,
+                                               h)
 
                                 self.shader_handler_brick.unbind()
 
@@ -761,7 +797,8 @@ class DrawingHandler:
                                                                 })
 
                                 # gradient
-                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step,
+                                               h)
 
                                 self.shader_handler_brick.unbind()
 
@@ -775,7 +812,8 @@ class DrawingHandler:
                                                                 "border": border, "color_meca": my_color_meca})
 
                                 # gradient
-                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h)
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step,
+                                               h)
 
                                 self.shader_handler_brick.unbind()
 
@@ -783,27 +821,34 @@ class DrawingHandler:
                         if temp is not None:
                             temp = np.mean(temp)
 
-                        text_color = (0, 0, 0)
-                        if 0 < temp < 500:
-                            message = "froid"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
+                        if "Thermique" in Glob.physics:
+                            text_color = (0, 0, 0)
+                            if 0 < temp < 500:
+                                message = "froid"
 
-                        elif 500 < temp < 1400:
-                            message = "chaud"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(9)
+                                draw_textured_rectangle(x_s, y_s, 20, 20)
+                                glDisable(GL_TEXTURE_2D)
 
-                        else:
-                            message = "brulant"
-                            glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                       y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                       GLUT_BITMAP_HELVETICA_12,
-                                       message, *text_color)
+                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                           GLUT_BITMAP_HELVETICA_12,
+                                           message, *text_color)
+
+                            elif 500 < temp < 1400:
+                                message = "chaud"
+                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                           GLUT_BITMAP_HELVETICA_12,
+                                           message, *text_color)
+
+                            else:
+                                message = "brulant"
+                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                           GLUT_BITMAP_HELVETICA_12,
+                                           message, *text_color)
 
         else:
             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
@@ -898,7 +943,7 @@ class DrawingHandler:
             self.old_q = self.q
             self.q = 0
 
-        text_1 = "Fin du test"
+        text_1 = "Fin du test %s" % Glob.death_text
         text_2 = "Quantite d'acier : %0.2f tonne%s" % (self.old_q, 's' if self.old_q > 1 else '')
         scale = 2
         thickness = 5

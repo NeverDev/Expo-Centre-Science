@@ -45,7 +45,7 @@ class MainProgram:
 
         # Main utility class
         self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                      self.liquid_im, self.liquid_grid)
+                                       self.liquid_im, self.liquid_grid)
         self.current_activity = VideoAR(self.cam)
 
         # execute OpenGL loop forever
@@ -93,27 +93,23 @@ class MainProgram:
         # tell OpenGL to redraw as soon as possible
         glutPostRedisplay()
 
-
     def idle_video(self):
 
-       """# Timer Example
-        if self.timer is None:
-            self.timer = 15  # Seconds
-        elif self.timer > 0:
-            self.timer -= Glob.delta_t
+        """# Timer Example
+         if self.timer is None:
+             self.timer = 15  # Seconds
+         elif self.timer > 0:
+             self.timer -= Glob.delta_t
 
-        else:
-            self.timer = None
-            # Back to game scene when difficulty is over
-            self.current_activity = DifficultyAR(self.cam)"""
+         else:
+             self.timer = None
+             # Back to game scene when difficulty is over
+             self.current_activity = DifficultyAR(self.cam)"""
 
-       self.current_activity.cam.take_frame()
+        self.current_activity.cam.take_frame()
 
-       if self.current_activity.check_buttons():
-           self.current_activity = DifficultyAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                          self.liquid_im, self.liquid_grid)
-
-        pass
+        if self.current_activity.check_buttons():
+            self.current_activity = DifficultyAR(self.cam)
 
     def idle_difficulty(self):
 

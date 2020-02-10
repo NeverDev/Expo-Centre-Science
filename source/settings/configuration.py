@@ -78,4 +78,6 @@ class Globals:
 
     mode = 0
 
+    death_text = ""
+
     stress_active = False

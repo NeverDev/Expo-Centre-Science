@@ -363,6 +363,13 @@ class BrickArray:
             if b.drowned:
                 for index in b.indexes:
                     test = True if index[0] >= Conf.dim_grille[0] - 1 or index[1] >= Conf.dim_grille[1] - 1 else test
+
+        for i in range(Conf.dim_grille[1]):
+            if self.get_temp(Conf.dim_grille[0], 1) > 673:
+                Glob.death_text = "Brique exterieure trop chaude"
+                print("too hot")
+                return True
+
         return test
 
     def get_grid(self):

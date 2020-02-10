@@ -42,6 +42,8 @@ class HandButton(Thread):
 
         self.image = None
 
+        self.text_color = 1, 1, 1
+
     def run(self):
         while True:
             sleep(1)
@@ -117,7 +119,7 @@ class HandButton(Thread):
             draw_rectangle(x0, Conf.height - yf, xf - x0, yf - y0, 1, 1, 1)
 
         glut_print(x0 + .5 * (xf - x0) - 6 * len(self.title),
-                   Conf.height - y0 + 10, GLUT_BITMAP_HELVETICA_18, self.title, *Conf.text_color)
+                   Conf.height - y0 + 10, GLUT_BITMAP_HELVETICA_18, self.title, *self.text_color)
 
         if self.tex_handler is not None and self.crop is not None:
             glEnable(GL_TEXTURE_2D)
