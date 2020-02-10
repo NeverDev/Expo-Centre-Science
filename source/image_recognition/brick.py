@@ -366,7 +366,7 @@ class BrickArray:
 
         for i in range(Conf.dim_grille[1]):
             if self.get_temp(Conf.dim_grille[0], 1) > 673:
-                Glob.death_text = "Brique exterieure trop chaude"
+                Glob.death_text = "Brique extérieure trop chaude"
                 print("too hot")
                 return True
 
