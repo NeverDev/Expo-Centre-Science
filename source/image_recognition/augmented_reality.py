@@ -273,6 +273,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.draw()
         self.buttonMulti.draw()
         self.buttonValider.draw()
+        glut_print(20, 650, GLUT_BITMAP_HELVETICA_18, "SELECTIONNEZ LE CAS AVEC LEQUEL VOUS VOULEZ JOUER", 1, 1, 1)
 
     def check_buttons(self) -> bool:
         """ Update button image and read button state """

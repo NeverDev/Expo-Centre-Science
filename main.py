@@ -98,7 +98,7 @@ class MainProgram:
 
         # Timer Example
         if self.timer is None:
-            self.timer = 5  # Seconds
+            self.timer = 15  # Seconds
         elif self.timer > 0:
             self.timer -= Glob.delta_t
 
