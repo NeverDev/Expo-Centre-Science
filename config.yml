@@ -15,17 +15,17 @@ button:
   hand_area_1: [[400, 920], [500, 1000]]
   hand_area_2: [[200, 10], [300, 80]]
 
-  hand_area_3: [[350, 100], [400, 200]]
-  hand_area_4: [[350, 325], [400, 425]]
-  hand_area_5: [[350, 575], [400, 675]]
-  hand_area_6: [[350, 850], [400, 950]]
-  hand_area_7: [[50, 700], [150, 800]]
-
+  hand_area_3: [[350, 50], [400, 150]]
+  hand_area_4: [[350, 275], [400, 375]]
+  hand_area_5: [[350, 525], [400, 625]]
+  hand_area_6: [[350, 800], [400, 900]]
+  hand_area_7: [[600, 900], [650, 1000]]
+  hand_area_8: [[50, 850], [100, 950]]
 
 
   # increase if buttons trigger for nothing
-  hand_threshold_1: 100 # area (pxl*pxl) 100int
-  hand_threshold_2: 100 # area (pxl*pxl)100 int
+  hand_threshold_1: 150 # area (pxl*pxl) 100int
+  hand_threshold_2: 150 # area (pxl*pxl)100 int
 
   cooldown: 4
 

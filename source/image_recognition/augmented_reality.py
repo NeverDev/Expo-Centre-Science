@@ -235,7 +235,7 @@ class VideoAR(AugmentedReality):
                 glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
-        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_7, Conf.hand_threshold_1)
+        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
         self.buttonJeu.daemon = True
         self.buttonJeu.start()
         self.buttonJeu.title = "Passer au jeu"
