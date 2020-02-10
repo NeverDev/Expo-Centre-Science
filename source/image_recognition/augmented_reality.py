@@ -207,6 +207,13 @@ class VideoAR(AugmentedReality):
         self.video_path = "./ressources/poche.mp4"
         self.video_cap = cv2.VideoCapture(self.video_path)
 
+        # Create a handler for every drawing functions
+        self.draw_handler = DrawingHandler(self.tex_handler, None, None)
+        # Create button Handler and start them for image detection
+        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider = None, None, None, None, None
+        self.init_start_buttons()
+
+
     def render(self):
         glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
         if self.video_cap.isOpened():
@@ -221,6 +228,23 @@ class VideoAR(AugmentedReality):
                 self.tex_handler.use_texture(1)
                 draw_textured_rectangle(0, 0, Conf.width-200, Conf.height-100)
                 glDisable(GL_TEXTURE_2D)
+
+    def init_start_buttons(self):
+        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_7, Conf.hand_threshold_1)
+        self.buttonJeu.daemon = True
+        self.buttonJeu.start()
+        self.buttonJeu.title = "Passer au jeu"
+
+    def render(self) -> None:
+        """ render the scene with OpenGL"""
+        # step 1 : draw buttons interfaces, reset button depends on the mode
+        draw_rectangle(0, 0, Conf.width, Conf.height, 0.2, 0.2, 0.2)
+        self.buttonJeu.draw()
+
+    def check_buttons(self) -> bool:
+        """ Update button image and read button state """
+        # Set image to the newest one
+        self.buttonJeu.image = self.cam.image_raw
 
 
 # Difficulty Scene

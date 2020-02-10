@@ -96,7 +96,7 @@ class MainProgram:
 
     def idle_video(self):
 
-        # Timer Example
+       """# Timer Example
         if self.timer is None:
             self.timer = 15  # Seconds
         elif self.timer > 0:
@@ -105,7 +105,14 @@ class MainProgram:
         else:
             self.timer = None
             # Back to game scene when difficulty is over
-            self.current_activity = DifficultyAR(self.cam)
+            self.current_activity = DifficultyAR(self.cam)"""
+
+       self.current_activity.cam.take_frame()
+
+       if self.current_activity.check_buttons():
+           self.current_activity = DifficultyAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                          self.liquid_im, self.liquid_grid)
+
         pass
 
     def idle_difficulty(self):
