@@ -819,7 +819,10 @@ class DrawingHandler:
 
                         temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
                         if temp is not None:
-                            temp = np.mean(temp)
+                            try:
+                                temp = np.mean(temp)
+                            except Exception as e:
+                                return
 
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)

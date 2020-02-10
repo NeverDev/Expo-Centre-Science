@@ -358,19 +358,12 @@ class BrickArray:
         return True
 
     def test_loose(self) -> bool:
-        test = False
-        for b in self.array.flatten():
-            if b.drowned:
-                for index in b.indexes:
-                    test = True if index[0] >= Conf.dim_grille[0] - 1 or index[1] >= Conf.dim_grille[1] - 1 else test
-
         for i in range(Conf.dim_grille[1]):
-            if self.get_temp(Conf.dim_grille[0], 1) > 673:
+            if np.max(self.get_temp(Conf.dim_grille[0]-1, i)) > 673:
                 Glob.death_text = "Brique exterieure trop chaude"
                 print("too hot")
                 return True
-
-        return test
+        return False
 
     def get_grid(self):
         grid = np.zeros(self.array.shape)

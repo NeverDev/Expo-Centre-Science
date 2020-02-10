@@ -167,7 +167,9 @@ class MainProgram:
                 if not self.lost.empty():
                     self.lost_leak = self.lost.get()
 
-                if (self.lost_leak or lost_struct) or self.current_activity.buttonReset.is_triggered:
+                if (self.lost_leak or lost_struct) \
+                        or self.current_activity.buttonReset.is_triggered \
+                        or Glob.brick_array.test_loose():
                     print("reset")
                     if self.current_activity.buttonReset.is_triggered:
                         print("(from rst button)")
