@@ -126,7 +126,7 @@ class HandButton(Thread):
             size = np.shape(self.crop)[:2]
             self.tex_handler.bind_texture(self.tex_loc, cv2.flip(self.crop, 0), size[1], size[0])
             self.tex_handler.use_texture(self.tex_loc)
-            draw_textured_rectangle(x0, Conf.height - yf - (yf - y0), xf - x0, yf - y0)
+            draw_textured_rectangle(x0, Conf.height - yf + (yf - y0), xf - x0, yf - y0)
             glDisable(GL_TEXTURE_2D)
 
         pass
