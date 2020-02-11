@@ -49,7 +49,16 @@ class GameAR(AugmentedReality):
         # self.image_1 = cv2.imread("./..")
         # size = np.shape(self.image_1)[:2]
         # self.tex_handler.bind_texture(9, self.image_1, size[0], size[1])
-        # x3
+
+        self.tex_handler = TextureHandler(11)
+        # self.image_2 = cv2.imread("./..")
+        # size = np.shape(self.image_2)[:2]
+        # self.tex_handler.bind_texture(9, self.image_2, size[0], size[1])
+
+        self.tex_handler = TextureHandler(10)
+        # self.image_3 = cv2.imread("./..")
+        # size = np.shape(self.image_3)[:2]
+        # self.tex_handler.bind_texture(9, self.image_3, size[0], size[1])
 
 
         # Create a handler for every drawing functions
@@ -829,10 +838,10 @@ class DrawingHandler:
                             if 0 < temp < 500:
                                 message = "froid"
 
-                                glEnable(GL_TEXTURE_2D)
-                                self.tex_handler.use_texture(9)
-                                draw_textured_rectangle(x_s, y_s, 20, 20)
-                                glDisable(GL_TEXTURE_2D)
+                                #glEnable(GL_TEXTURE_2D)
+                                #self.tex_handler.use_texture(12)
+                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                #glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
@@ -841,6 +850,12 @@ class DrawingHandler:
 
                             elif 500 < temp < 1400:
                                 message = "chaud"
+
+                                #glEnable(GL_TEXTURE_2D)
+                                #self.tex_handler.use_texture(11)
+                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                #glDisable(GL_TEXTURE_2D)
+
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                            GLUT_BITMAP_HELVETICA_12,
@@ -848,6 +863,12 @@ class DrawingHandler:
 
                             else:
                                 message = "brulant"
+
+                                #glEnable(GL_TEXTURE_2D)
+                                #self.tex_handler.use_texture(10)
+                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                #glDisable(GL_TEXTURE_2D)
+
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                            GLUT_BITMAP_HELVETICA_12,
