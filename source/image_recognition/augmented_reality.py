@@ -50,13 +50,16 @@ class GameAR(AugmentedReality):
         size = np.shape(self.image_1)[:2]
         self.tex_handler.bind_texture(12, self.image_1, size[0], size[1])
 
+
         self.image_2 = cv2.imread("./ressources/Thermo2final.png")
         size = np.shape(self.image_2)[:2]
         self.tex_handler.bind_texture(11, self.image_2, size[0], size[1])
 
+
         self.image_3 = cv2.imread("./ressources/Thermo3final.png")
         size = np.shape(self.image_3)[:2]
         self.tex_handler.bind_texture(10, self.image_3, size[0], size[1])
+
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
