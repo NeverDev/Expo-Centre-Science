@@ -229,7 +229,6 @@ class CalibrationAR(AugmentedReality):
         if des1 is None or des2 is None:
             return False
 
-
         FLANN_INDEX_KDTREE = 0
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
         search_params = dict(checks=50)
@@ -276,21 +275,26 @@ class VideoAR(AugmentedReality):
         # Create button Handler and start them for image detection
         self.buttonJeu = None
         self.init_start_buttons()
+        self.next_frame = np.zeros((Conf.width, Conf.height, 4), np.uint8)
+        self.tex_handler.bind_texture(1, self.next_frame, Conf.width, Conf.height)
 
-    def render_video(self):
-        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
+    def next_video_frame(self):
         if self.video_cap.isOpened():
             ret, frame = self.video_cap.read()
             if ret:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
                 frame = cv2.resize(frame, (Conf.width, Conf.height))
-                frame = cv2.flip(frame, 0)
+                self.next_frame = cv2.flip(frame, 0)
 
-                glEnable(GL_TEXTURE_2D)
-                self.tex_handler.bind_texture(1, frame, Conf.width, Conf.height)
-                self.tex_handler.use_texture(1)
-                draw_textured_rectangle(0, 0, Conf.width - 200, Conf.height - 100)
-                glDisable(GL_TEXTURE_2D)
+    def render_video(self):
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
+
+        if self.next_frame is not None:
+            glEnable(GL_TEXTURE_2D)
+            self.tex_handler.bind_texture(1, self.next_frame, Conf.width, Conf.height)
+            self.tex_handler.use_texture(1)
+            draw_textured_rectangle(0, 0, Conf.width - 200, Conf.height - 100)
+            glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
         self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
@@ -1060,15 +1064,15 @@ class Camera:
     def take_frame(self) -> None:
         """ Update current raw frame in BGR format"""
         if Glob.homography is None:
-                ret, self.image = self.capture.read()
-                self.image_raw = cv2.resize(self.image, (Conf.width, Conf.height))
+            ret, self.image = self.capture.read()
+            self.image_raw = cv2.resize(self.image, (Conf.width, Conf.height))
 
         else:
             ret, image = self.capture.read()
             cv2.imwrite("rawframe.png", image)
             M = Glob.homography
             self.image_raw = cv2.warpPerspective(image, np.linalg.inv(M), (Conf.width, Conf.height),
-                                         borderValue=(255, 255, 255))
+                                                 borderValue=(255, 255, 255))
             cv2.imwrite("lastframe.png", self.image_raw)
 
         if not ret:
