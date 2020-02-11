@@ -46,19 +46,19 @@ class GameAR(AugmentedReality):
 
         # Create a texture handler with 6 different textures
         self.tex_handler = TextureHandler(12)
-        # self.image_1 = cv2.imread("./..")
-        # size = np.shape(self.image_1)[:2]
-        # self.tex_handler.bind_texture(9, self.image_1, size[0], size[1])
+        self.image_1 = cv2.imread("./ressources/Thermo1final.png")
+        size = np.shape(self.image_1)[:2]
+        self.tex_handler.bind_texture(9, self.image_1, size[0], size[1])
 
         self.tex_handler = TextureHandler(11)
-        # self.image_2 = cv2.imread("./..")
-        # size = np.shape(self.image_2)[:2]
-        # self.tex_handler.bind_texture(9, self.image_2, size[0], size[1])
+        self.image_2 = cv2.imread("./ressources/Thermo2final.png")
+        size = np.shape(self.image_2)[:2]
+        self.tex_handler.bind_texture(9, self.image_2, size[0], size[1])
 
         self.tex_handler = TextureHandler(10)
-        # self.image_3 = cv2.imread("./..")
-        # size = np.shape(self.image_3)[:2]
-        # self.tex_handler.bind_texture(9, self.image_3, size[0], size[1])
+        self.image_3 = cv2.imread("./ressources/Thermo3final.png")
+        size = np.shape(self.image_3)[:2]
+        self.tex_handler.bind_texture(9, self.image_3, size[0], size[1])
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
