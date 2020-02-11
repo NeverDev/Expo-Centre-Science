@@ -44,7 +44,7 @@ class MainProgram:
         self.cam = Camera(Conf.width, Conf.height)
 
         # Main utility class
-        self.current_activity = CalibrationAR(self.cam)
+        self.current_activity = VideoAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -168,12 +168,18 @@ class MainProgram:
                     Conf.t_chamber = Conf.temperature if (self.current_activity.buttonStart.is_triggered
                                                           and self.current_activity.number) > 0 \
                         else max(Conf.t_chamber - Conf.cooling_factor * Glob.delta_t, 293)
-                    Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
-                                            and self.current_activity.number >= 0)
+                    try:
+                        Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
+                                                and self.current_activity.number >= 0)
+                    except Exception as e:
+                        print(e)
 
                 else:
-                    Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
-                                            and self.current_activity.number >= 0)
+                    try:
+                        Glob.brick_array.update(not self.current_activity.buttonStart.is_ready()
+                                                and self.current_activity.number >= 0)
+                    except Exception as e:
+                        print(e)
 
                 lost_struct = False  # Glob.brick_array.test_loose()
                 if not self.lost.empty():

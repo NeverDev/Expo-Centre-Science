@@ -43,6 +43,7 @@ class HandButton(Thread):
         self.image = None
 
         self.text_color = 1, 1, 1
+        self.draw_color = 1,1,1
 
     def run(self):
         while True:
@@ -118,7 +119,7 @@ class HandButton(Thread):
         elif self.is_waiting:
             draw_rectangle(x0, Conf.height - yf, xf - x0, yf - y0, 1, 0, 0)
         else:
-            draw_rectangle(x0, Conf.height - yf, xf - x0, yf - y0, 1, 1, 1)
+            draw_rectangle(x0, Conf.height - yf, xf - x0, yf - y0, *self.draw_color)
 
         glut_print(x0 + .5 * (xf - x0) - 6 * len(self.title),
                    Conf.height - y0 + 10, GLUT_BITMAP_HELVETICA_18, self.title, *self.text_color)
@@ -139,6 +140,8 @@ class HandButton(Thread):
     def pause(self):
         self.active = False
         self.is_triggered = False
+        self.draw_color = 1,0,0
 
     def unpause(self):
         self.active = True
+        self.draw_color = 1,1,1
