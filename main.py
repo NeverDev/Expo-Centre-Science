@@ -44,7 +44,7 @@ class MainProgram:
         self.cam = Camera(Conf.width, Conf.height)
 
         # Main utility class
-        self.current_activity = VideoAR(self.cam)
+        self.current_activity = CalibrationAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -77,6 +77,7 @@ class MainProgram:
 
         Glob.delta_t = clock() - Glob.t_ref
         Glob.t_ref = clock()
+        print("fps: %0.2f" % (1/max(Glob.delta_t, 1E-3)))
 
         # swap between scene idle function
         if type(self.current_activity) == CalibrationAR:
@@ -98,10 +99,10 @@ class MainProgram:
             elif self.timer > 0:
                 self.timer -= Glob.delta_t
                 if self.current_activity.calibrate():
-                    self.current_activity = DifficultyAR(self.cam)
+                    self.current_activity = VideoAR(self.cam)
             else:
                 print("Calibration failed, default mode")
-                self.current_activity = DifficultyAR(self.cam)
+                self.current_activity = VideoAR(self.cam)
         except Exception as e:
             print(e)
 
@@ -119,6 +120,7 @@ class MainProgram:
              self.current_activity = DifficultyAR(self.cam)"""
 
         self.current_activity.cam.take_frame()
+        self.current_activity.next_video_frame()
 
         if self.current_activity.check_buttons():
             self.current_activity = DifficultyAR(self.cam)

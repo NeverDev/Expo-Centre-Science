@@ -60,7 +60,8 @@ class Brick:
         self.is_invalid = True
 
     def update_corrosion(self, dt) -> void:
-        self.material.update_corrosion(dt)
+        if "Corrosion" in Glob.physics:
+            self.material.update_corrosion(dt)
 
 
 class BrickGeometry:
