@@ -51,7 +51,6 @@ class GameAR(AugmentedReality):
         # self.tex_handler.bind_texture(9, self.image_1, size[0], size[1])
         # x3
 
-
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
 
@@ -190,18 +189,68 @@ class GameAR(AugmentedReality):
 
 
 # Language Selection Scene
-class LanguageAR(AugmentedReality):
+class CalibrationAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
-        self.buttonFR, self.buttonEN = None, None
-        self.init_start_buttons()
+        self.tex_handler = TextureHandler(3)
+        self.image_path = "./ressources/calib.png"
+        image = cv2.imread(self.image_path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
+        self.ref = cv2.resize(image, (Conf.width, Conf.height))
+        image = cv2.flip(self.ref, 0)
 
-    def init_start_buttons(self):
-        pass
+        glEnable(GL_TEXTURE_2D)
+        self.tex_handler.bind_texture(2, image, image.shape[1], image.shape[0])
+        glDisable(GL_TEXTURE_2D)
+
+        self.timer = clock()
+
+    def calibrate(self):
+        if clock() - self.timer < 5:
+            return False
+
+        self.cam.take_frame()
+
+        frame = cv2.cvtColor(self.cam.image_raw, cv2.COLOR_BGR2GRAY)
+        ref_gray = cv2.cvtColor(self.ref, cv2.COLOR_BGR2GRAY)
+
+        sift = cv2.xfeatures2d.SIFT_create()
+        kp1, des1 = sift.detectAndCompute(ref_gray, None)
+        kp2, des2 = sift.detectAndCompute(frame, None)
+        if des1 is None or des2 is None:
+            return False
+
+
+        FLANN_INDEX_KDTREE = 0
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        search_params = dict(checks=50)
+
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+        matches = flann.knnMatch(des1, des2, k=2)
+
+        # store all the good matches as per Lowe's ratio test.
+        good = []
+        for m, n in matches:
+            if m.distance < 0.7 * n.distance:
+                good.append(m)
+
+        if len(good) > 50:
+            src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+            dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+            Glob.homography, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+            print("Calibration succeed, %i points recognized" % len(good))
+            return True
+        else:
+            return False
 
     def render(self):
         glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "LANGUAGE", 1, 0, 1)
-        pass
+        glEnable(GL_TEXTURE_2D)
+        self.tex_handler.use_texture(2)
+        draw_textured_rectangle(0, 0, Conf.width, Conf.height)
+        glDisable(GL_TEXTURE_2D)
 
 
 # Video Scene
@@ -263,7 +312,7 @@ class DifficultyAR(AugmentedReality):
         super().__init__(cam)
 
         # Create a texture handler with 6 different textures
-        self.tex_handler = TextureHandler(7)
+        self.tex_handler = TextureHandler(8)
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, None, None)
@@ -277,7 +326,7 @@ class DifficultyAR(AugmentedReality):
     def init_start_buttons(self):
         self.buttonCorrosion = HandButton(0, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
         self.buttonMecanique = HandButton(1, self.tex_handler, 3, Conf.hand_area_4, Conf.hand_threshold_2)
-        self.buttonThermique = HandButton(1, self.tex_handler, 4, Conf.hand_area_5, Conf.hand_threshold_2)
+        self.buttonThermique = HandButton(1, self.tex_handler, 7, Conf.hand_area_5, Conf.hand_threshold_2)
         self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
         self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
 
@@ -333,22 +382,24 @@ class DifficultyAR(AugmentedReality):
             Glob.physics = ["Mécanique", "Thermique"]
             if self.active_button is not None:
                 self.active_button.unpause()
-            self.buttonCorrosion.pause()
+            self.buttonMecanique.pause()
             self.active_button = self.buttonMecanique
 
         if self.buttonThermique.is_triggered:
             Glob.physics = ["Corrosion", "Thermique"]
             if self.active_button is not None:
                 self.active_button.unpause()
-            self.buttonCorrosion.pause()
+            self.buttonThermique.pause()
             self.active_button = self.buttonThermique
 
         if self.buttonMulti.is_triggered:
             Glob.physics = ["Corrosion", "Thermique", "Mécanique"]
             if self.active_button is not None:
                 self.active_button.unpause()
-            self.buttonCorrosion.pause()
+            self.buttonMulti.pause()
             self.active_button = self.buttonMulti
+
+        print(Glob.physics)
 
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
             return True
@@ -978,8 +1029,8 @@ class Camera:
         if not self.capture.isOpened():
             raise IOError("Webcam not plugged or wrong webcam index")
         time.sleep(.5)
-        self.capture.set(3, width)
-        self.capture.set(4, height)
+        # self.capture.set(3, width)
+        # self.capture.set(4, height)
         # self.capture.set(cv2.CAP_PROP_AUTO_EXPOSURE, .25)
         # self.capture.set(cv2.CAP_PROP_EXPOSURE, -2)
         # self.capture.set(cv2.CAP_PROP_BRIGHTNESS, -10)
@@ -987,6 +1038,18 @@ class Camera:
 
     def take_frame(self) -> None:
         """ Update current raw frame in BGR format"""
-        ret, self.image_raw = self.capture.read()
+        if Glob.homography is None:
+            for i in range(5):
+                ret, self.image_raw = self.capture.read()
+
+        else:
+            ret, image = self.capture.read()
+            cv2.imwrite("rawframe.png", image)
+            M = Glob.homography
+            self.image_raw = cv2.warpPerspective(image, np.linalg.inv(M), (Conf.width, Conf.height),
+                                         borderValue=(255, 255, 255))
+            cv2.imwrite("lastframe.png", self.image_raw)
+
+
         if not ret:
             print("camera capture failed")

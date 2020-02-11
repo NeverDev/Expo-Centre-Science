@@ -82,3 +82,5 @@ class Globals:
     death_text = ""
 
     stress_active = False
+
+    homography = None
