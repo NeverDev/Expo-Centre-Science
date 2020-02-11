@@ -8,7 +8,7 @@ grid:
 
 camera:
   cam_area: [[370,180], [1410,1000]]
-  cam_number:  1
+  cam_number:  0
   refresh_rate: 1 # refresh each X frames
 
 button:
@@ -20,7 +20,7 @@ button:
   hand_area_5: [[350, 525], [400, 625]]
   hand_area_6: [[350, 800], [400, 900]]
   hand_area_7: [[600, 900], [650, 1000]]
-  hand_area_8: [[50, 850], [100, 950]]
+  hand_area_8: [[50, 850], [150, 950]]
 
 
   # increase if buttons trigger for nothing

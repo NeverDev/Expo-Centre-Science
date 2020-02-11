@@ -211,7 +211,7 @@ class CalibrationAR(AugmentedReality):
 
         self.cam.take_frame()
 
-        frame = cv2.cvtColor(self.cam.image_raw, cv2.COLOR_BGR2GRAY)
+        frame = cv2.cvtColor(self.cam.image, cv2.COLOR_BGR2GRAY)
         ref_gray = cv2.cvtColor(self.ref, cv2.COLOR_BGR2GRAY)
 
         sift = cv2.xfeatures2d.SIFT_create()
@@ -324,7 +324,7 @@ class DifficultyAR(AugmentedReality):
         self.active_button = None
 
     def init_start_buttons(self):
-        self.buttonCorrosion = HandButton(0, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
+        self.buttonCorrosion = HandButton(1, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
         self.buttonMecanique = HandButton(1, self.tex_handler, 3, Conf.hand_area_4, Conf.hand_threshold_2)
         self.buttonThermique = HandButton(1, self.tex_handler, 7, Conf.hand_area_5, Conf.hand_threshold_2)
         self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
@@ -1039,8 +1039,8 @@ class Camera:
     def take_frame(self) -> None:
         """ Update current raw frame in BGR format"""
         if Glob.homography is None:
-            for i in range(5):
-                ret, self.image_raw = self.capture.read()
+                ret, self.image = self.capture.read()
+                self.image_raw = cv2.resize(self.image, (Conf.width, Conf.height))
 
         else:
             ret, image = self.capture.read()
@@ -1049,7 +1049,6 @@ class Camera:
             self.image_raw = cv2.warpPerspective(image, np.linalg.inv(M), (Conf.width, Conf.height),
                                          borderValue=(255, 255, 255))
             cv2.imwrite("lastframe.png", self.image_raw)
-
 
         if not ret:
             print("camera capture failed")
