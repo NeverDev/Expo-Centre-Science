@@ -55,7 +55,7 @@ class HandButton(Thread):
         yf, xf = self.hand_area[1]
 
         if not self.is_triggered:
-            self.crop = cv2.cvtColor(crop_zone(image, x0, y0, xf, yf), cv2.COLOR_BGR2RGBA)
+            self.crop = cv2.cvtColor(crop_zone(image, x0+10, y0+10, xf-10, yf-10), cv2.COLOR_BGR2RGBA)
             self.crop = cv2.addWeighted(self.crop, 1, self.crop, 0, -20)
 
         if self.is_triggered:
@@ -80,6 +80,8 @@ class HandButton(Thread):
         """ Detect hand in the button area """
         # crop to the button zone
         crop = self.crop
+        if self.crop is None:
+            return False
         crop[:, :, 3] = 255.0 * np.ones((crop.shape[0], crop.shape[1]))
 
         # Luminance analysis is enough

@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from source.physics.liquid_equation import *
-from source.image_recognition.augmented_reality import AugmentedReality, GameAR, DifficultyAR, VideoAR, LanguageAR, \
+from source.image_recognition.augmented_reality import GameAR, DifficultyAR, VideoAR, CalibrationAR, \
     Camera
 
 from OpenGL.GLU import *
@@ -44,9 +44,7 @@ class MainProgram:
         self.cam = Camera(Conf.width, Conf.height)
 
         # Main utility class
-        self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                       self.liquid_im, self.liquid_grid)
-        self.current_activity = VideoAR(self.cam)
+        self.current_activity = CalibrationAR(self.cam)
 
         # execute OpenGL loop forever
         self.loop()
@@ -81,8 +79,8 @@ class MainProgram:
         Glob.t_ref = clock()
 
         # swap between scene idle function
-        if type(self.current_activity) == LanguageAR:
-            self.idle_language()
+        if type(self.current_activity) == CalibrationAR:
+            self.idle_calibration()
         elif type(self.current_activity) == VideoAR:
             self.idle_video()
         elif type(self.current_activity) == DifficultyAR:
@@ -92,6 +90,20 @@ class MainProgram:
 
         # tell OpenGL to redraw as soon as possible
         glutPostRedisplay()
+
+    def idle_calibration(self):
+        try:
+            if self.timer is None:
+                self.timer = 15  # Seconds
+            elif self.timer > 0:
+                self.timer -= Glob.delta_t
+                if self.current_activity.calibrate():
+                    self.current_activity = DifficultyAR(self.cam)
+            else:
+                print("Calibration failed, default mode")
+                self.current_activity = DifficultyAR(self.cam)
+        except Exception as e:
+            print(e)
 
     def idle_video(self):
 
@@ -215,8 +227,8 @@ class MainProgram:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # swap between scene display
-        if type(self.current_activity) == LanguageAR:
-            self.display_language()
+        if type(self.current_activity) == CalibrationAR:
+            self.display_calibration()
             pass
         elif type(self.current_activity) == VideoAR:
             self.display_video()
@@ -229,7 +241,7 @@ class MainProgram:
 
         glutSwapBuffers()
 
-    def display_language(self):
+    def display_calibration(self):
         # TODO render language screen here
         self.current_activity: LanguageAR
         self.current_activity.render()  # look at LanguageAR.render()
