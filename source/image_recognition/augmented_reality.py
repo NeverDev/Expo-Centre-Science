@@ -978,7 +978,7 @@ class DrawingHandler:
                     if start_button.is_ready():
                         title = strings['title_test']
                         subtitle = strings['sub_title_test1i'] % number
-                        subtitle += "   Quantité d'acier: %0.2f tonne%s" % (self.q, "s" if self.q > 1 else "")
+                        subtitle += "   Quantité d'acier: %0.2f tonne%s sur 330 maximum" % (self.q, "s" if self.q > 1 else "")
                     elif start_button.is_triggered:
                         title = "Coulée en cours"
                         subtitle = ""
@@ -1022,8 +1022,8 @@ class DrawingHandler:
 
         text_1 = "Fin du test %s" % Glob.death_text
         text_2 = "Quantite d'acier : %0.2f tonne%s" % (self.old_q, 's' if self.old_q > 1 else '')
-        scale = 2
-        thickness = 5
+        scale = 1
+        thickness = 4
 
         text_size_1 = cv2.getTextSize(text_1, cv2.FONT_HERSHEY_SIMPLEX, scale, thickness)[0]
         text_size_2 = cv2.getTextSize(text_2, cv2.FONT_HERSHEY_SIMPLEX, scale, thickness)[0]
