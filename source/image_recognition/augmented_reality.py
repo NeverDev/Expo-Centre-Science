@@ -45,7 +45,7 @@ class GameAR(AugmentedReality):
         self.new = False
 
         # Create a texture handler with 6 different textures
-        self.tex_handler = TextureHandler(12)
+        self.tex_handler = TextureHandler(14)
         self.image_1 = cv2.imread("./ressources/Thermo1final.png")
         size = np.shape(self.image_1)[:2]
         self.tex_handler.bind_texture(12, self.image_1, size[0], size[1])
@@ -887,45 +887,49 @@ class DrawingHandler:
                                 return
 
                         if "Thermique" in Glob.physics:
-                            text_color = (0, 0, 0)
-                            if 0 < temp < 500:
-                                message = "froid"
+                            if not b_xy.is_void and not b_xy.material.is_broken:
+                                text_color = (0, 0, 0)
+                                if 0 < temp < 500:
+                                    message = "froid"
 
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(12)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
+                                    #glEnable(GL_TEXTURE_2D)
+                                    #self.tex_handler.use_texture(12)
+                                    #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                    #glDisable(GL_TEXTURE_2D)
 
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                    glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                               y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                               GLUT_BITMAP_HELVETICA_12,
+                                               message, *text_color)
 
-                            elif 500 < temp < 1400:
-                                message = "chaud"
+                                elif 500 < temp < 1400:
+                                    message = "chaud"
 
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(11)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
+                                    #glEnable(GL_TEXTURE_2D)
+                                    #self.tex_handler.use_texture(11)
+                                    #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                    #glDisable(GL_TEXTURE_2D)
 
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                    glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                               y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                               GLUT_BITMAP_HELVETICA_12,
+                                               message, *text_color)
 
+                                else:
+                                    message = "brulant"
+
+                                    #glEnable(GL_TEXTURE_2D)
+                                    #self.tex_handler.use_texture(10)
+                                    #draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                    #glDisable(GL_TEXTURE_2D)
+
+                                    glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                               y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                               GLUT_BITMAP_HELVETICA_12,
+                                               message, *text_color)
                             else:
-                                message = "brulant"
-
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(10)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
-
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step,
+                                               h, 0, 0, 0)
 
         else:
             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
