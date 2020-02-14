@@ -983,7 +983,7 @@ class DrawingHandler:
                     if start_button.is_ready():
                         title = strings['title_test']
                         subtitle = strings['sub_title_test1i'] % number
-                        subtitle += "   Quantité d'acier: %0.2f tonne%s sur 330 maximum" % (self.q, "s" if self.q > 1 else "")
+                        subtitle += "   Quantité d'acier: %0.2f tonne%s " % (self.q, "s" if self.q > 1 else "")
                     elif start_button.is_triggered:
                         title = "Coulée en cours"
                         subtitle = ""
