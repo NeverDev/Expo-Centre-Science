@@ -829,6 +829,9 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
 
+                        temperature_ext = (max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273
+                        glut_print(300, 800, GLUT_BITMAP_HELVETICA_18, temperature_ext, 0, 0, 0)
+
                         if not start_button.is_ready() and "Mécanique" in Glob.physics:
                             stress = update_stress(b_xy.indexes[0][1])
                             if stress >= 3.06:
@@ -847,8 +850,7 @@ class DrawingHandler:
 
                                 self.shader_handler_brick.unbind()
 
-                            temperature_ext = (max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273
-                            glut_print(300, 800, GLUT_BITMAP_HELVETICA_18, temperature_ext, 0, 0, 0)
+
 
                             elif 1 <= stress < 3.06:
                                 my_color_meca = [1, 0.5, 0, 1]

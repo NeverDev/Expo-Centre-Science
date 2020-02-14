@@ -8,7 +8,7 @@ grid:
 
 camera:
   cam_area: [[370,180], [1410,1000]]
-  cam_number:  1
+  cam_number:  0
   refresh_rate: 1 # refresh each X frames
 
 button:
@@ -24,8 +24,8 @@ button:
 
 
   # increase if buttons trigger for nothing
-  hand_threshold_1: 150 # area (pxl*pxl) 100int
-  hand_threshold_2: 150 # area (pxl*pxl)100 int
+  hand_threshold_1: 100 # area (pxl*pxl) 100int
+  hand_threshold_2: 100 # area (pxl*pxl)100 int
 
   cooldown: 4
 
