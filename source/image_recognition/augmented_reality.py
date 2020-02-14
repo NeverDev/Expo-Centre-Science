@@ -847,6 +847,9 @@ class DrawingHandler:
 
                                 self.shader_handler_brick.unbind()
 
+                            temperature_ext = (max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273
+                            glut_print(300, 800, GLUT_BITMAP_HELVETICA_18, temperature_ext, 0, 0, 0)
+
                             elif 1 <= stress < 3.06:
                                 my_color_meca = [1, 0.5, 0, 1]
                                 self.shader_handler_brick.bind({"Corrosion": b_xy.material.health if i == 1 else 1,
@@ -1011,6 +1014,13 @@ class DrawingHandler:
                 for j in range(Conf.dim_grille[1]):
                     pass
                     draw_rectangle_empty(x0 + i * step_i, y0 + j * step_j, step_i, step_j, 0.2, 0.2, 0.2, 2)
+
+        glut_print(300, 100, GLUT_BITMAP_HELVETICA_14, "Pression hydrostatique", 0, 0, 0)
+        glut_print(320, 100, GLUT_BITMAP_HELVETICA_14, "Vert = Pression faible", 0, 1, 0)
+        glut_print(340, 100, GLUT_BITMAP_HELVETICA_14, "Orange = Pression moyenne", 1, 0.5, 0)
+        glut_print(360, 100, GLUT_BITMAP_HELVETICA_14, "Rouge = Pression forte", 1, 0, 0)
+        glut_print(400, 100, GLUT_BITMAP_HELVETICA_14, "Attention la température extérieure", 0, 0, 0)
+        glut_print(420, 100, GLUT_BITMAP_HELVETICA_14, "ne doit pas être supérieure à 400°C", 0, 0, 0)
 
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
