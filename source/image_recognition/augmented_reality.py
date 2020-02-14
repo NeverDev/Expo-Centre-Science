@@ -1017,14 +1017,14 @@ class DrawingHandler:
                     pass
                     draw_rectangle_empty(x0 + i * step_i, y0 + j * step_j, step_i, step_j, 0.2, 0.2, 0.2, 2)
 
-        glut_print(0, 500, GLUT_BITMAP_HELVETICA_18, "Pression hydrostatique", 1, 1, 1)
-        glut_print(0, 400, GLUT_BITMAP_HELVETICA_18, "Vert = Pression faible", 0, 1, 0)
-        glut_print(0, 450, GLUT_BITMAP_HELVETICA_18, "Orange = Pression", 1, 0.5, 0)
-        glut_print(0, 425, GLUT_BITMAP_HELVETICA_18, "         moyenne", 1, 0.5, 0)
-        glut_print(0, 475, GLUT_BITMAP_HELVETICA_18, "Rouge = Pression forte", 1, 0, 0)
-        glut_print(0, 300, GLUT_BITMAP_HELVETICA_18, "Attention la température ", 1, 1, 1)
-        glut_print(0, 275, GLUT_BITMAP_HELVETICA_18, "extérieure ne doit pas ", 1, 1, 1)
-        glut_print(0, 250, GLUT_BITMAP_HELVETICA_18, "être supérieure à 400°C", 1, 1, 1)
+        glut_print(0, 400, GLUT_BITMAP_HELVETICA_18, "Pression hydrostatique", 1, 1, 1)
+        glut_print(0, 300, GLUT_BITMAP_HELVETICA_18, "Vert = Pression faible", 0, 1, 0)
+        glut_print(0, 350, GLUT_BITMAP_HELVETICA_18, "Orange = Pression", 1, 0.5, 0)
+        glut_print(0, 325, GLUT_BITMAP_HELVETICA_18, "         moyenne", 1, 0.5, 0)
+        glut_print(0, 375, GLUT_BITMAP_HELVETICA_18, "Rouge = Pression forte", 1, 0, 0)
+        glut_print(0, 250, GLUT_BITMAP_HELVETICA_18, "Attention la température ", 1, 1, 1)
+        glut_print(0, 225, GLUT_BITMAP_HELVETICA_18, "extérieure ne doit pas ", 1, 1, 1)
+        glut_print(0, 200, GLUT_BITMAP_HELVETICA_18, "être supérieure à 400°C", 1, 1, 1)
 
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
