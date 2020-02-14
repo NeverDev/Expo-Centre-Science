@@ -361,7 +361,7 @@ class BrickArray:
     def test_loose(self) -> bool:
         for i in range(Conf.dim_grille[1]):
             if np.max(self.get_temp(Conf.dim_grille[0]-1, i)) > 673:
-                Glob.death_text = "Brique exterieure trop chaude"
+                Glob.death_text = "Paroi exterieure trop chaude"
                 print("too hot")
                 return True
         return False
