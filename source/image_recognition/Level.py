@@ -1,5 +1,6 @@
 """code pour la video a remettre si besoin apres la selection de difficulté
 
+
 A mettre dans augmented reality pour créer la fenêtre de la video explicative
 
 class ExplicationAR(AugmentedReality):
