@@ -828,9 +828,10 @@ class DrawingHandler:
                                     y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
-
-                        temperature_ext = (max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273
-                        glut_print(300, 800, GLUT_BITMAP_HELVETICA_18, temperature_ext, 0, 0, 0)
+                        t = []
+                        for i in range(Conf.dim_grille[1]):
+                            t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273)
+                        glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 0, 0)
 
                         if not start_button.is_ready() and "Mécanique" in Glob.physics:
                             stress = update_stress(b_xy.indexes[0][1])
@@ -896,10 +897,10 @@ class DrawingHandler:
                             if 0 < temp < 500:
                                 message = "froid"
 
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(12)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
+                                # glEnable(GL_TEXTURE_2D)
+                                # self.tex_handler.use_texture(12)
+                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                # glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
@@ -909,10 +910,10 @@ class DrawingHandler:
                             elif 500 < temp < 1400:
                                 message = "chaud"
 
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(11)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
+                                # glEnable(GL_TEXTURE_2D)
+                                # self.tex_handler.use_texture(11)
+                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                # glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
@@ -922,10 +923,10 @@ class DrawingHandler:
                             else:
                                 message = "brulant"
 
-                                #glEnable(GL_TEXTURE_2D)
-                                #self.tex_handler.use_texture(10)
-                                #draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                #glDisable(GL_TEXTURE_2D)
+                                # glEnable(GL_TEXTURE_2D)
+                                # self.tex_handler.use_texture(10)
+                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                # glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
