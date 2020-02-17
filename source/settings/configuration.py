@@ -35,6 +35,7 @@ class Config:
     hand_area_6 = section["hand_area_6"]
     hand_area_7 = section["hand_area_7"]
     hand_area_8 = section["hand_area_8"]
+    hand_area_9 = section["hand_area_9"]
 
     hand_threshold_1 = section["hand_threshold_1"]
     hand_threshold_2 = section["hand_threshold_2"]

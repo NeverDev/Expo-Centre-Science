@@ -21,6 +21,7 @@ button:
   hand_area_6: [[350, 800], [400, 900]]
   hand_area_7: [[600, 900], [650, 1000]]
   hand_area_8: [[50, 850], [150, 950]]
+  hand_area_9: [[0, 250], [100, 350]]
 
 
   # increase if buttons trigger for nothing

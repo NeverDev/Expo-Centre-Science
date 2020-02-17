@@ -125,6 +125,15 @@ class MainProgram:
         if self.current_activity.check_buttons():
             self.current_activity = DifficultyAR(self.cam)
 
+    def idle_explication(self):
+
+        self.current_activity.cam.take_frame()
+        self.current_activity.next_video_frame()
+
+        if self.current_activity.check_buttons():
+            self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                           self.liquid_im, self.liquid_grid)
+
     def idle_difficulty(self):
 
         self.current_activity.cam.take_frame()
@@ -132,6 +141,9 @@ class MainProgram:
         if self.current_activity.check_buttons():
             self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
                                            self.liquid_im, self.liquid_grid)
+
+        #Mais là je ne sais pas quoi mettre pour qu il me prenne en compte que qd le bouton "voir les explications" est
+        #activé il passe sur la fenetre ExplicationAR
 
         """
         # Timer Example
