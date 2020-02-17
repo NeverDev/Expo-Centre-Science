@@ -1034,6 +1034,9 @@ class DrawingHandler:
         glut_print(0, 250, GLUT_BITMAP_HELVETICA_18, "Attention la température ", 1, 1, 1)
         glut_print(0, 225, GLUT_BITMAP_HELVETICA_18, "extérieure ne doit pas ", 1, 1, 1)
         glut_print(0, 200, GLUT_BITMAP_HELVETICA_18, "être supérieure à 400°C", 1, 1, 1)
+        glut_print(200, 650, GLUT_BITMAP_HELVETICA_18, "Sens de coulée ", 1, 1, 1)
+        glut_print(200, 625, GLUT_BITMAP_HELVETICA_18, "      |      ", 1, 1, 1)
+        glut_print(200, 615, GLUT_BITMAP_HELVETICA_18, "      V      ", 1, 1, 1)
 
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
