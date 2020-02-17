@@ -1044,7 +1044,7 @@ class DrawingHandler:
             self.q = 0
 
         text_1 = "Fin du test %s" % Glob.death_text
-        text_2 = "Quantité d'acier : %0.2f tonne%s " % (self.old_q, 's' if self.old_q > 1 else '')
+        text_2 = "Quantite d'acier : %0.2f tonne%s " % (self.old_q, 's' if self.old_q > 1 else '')
         scale = 1
         thickness = 4
 
