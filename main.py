@@ -77,7 +77,7 @@ class MainProgram:
 
         Glob.delta_t = clock() - Glob.t_ref
         Glob.t_ref = clock()
-        print("fps: %0.2f" % (1/max(Glob.delta_t, 1E-3)))
+        # print("fps: %0.2f" % (1/max(Glob.delta_t, 1E-3)))
 
         # swap between scene idle function
         if type(self.current_activity) == CalibrationAR:

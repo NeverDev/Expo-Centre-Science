@@ -47,14 +47,21 @@ class GameAR(AugmentedReality):
         # Create a texture handler with 6 different textures
         self.tex_handler = TextureHandler(14)
         self.image_1 = cv2.imread("./ressources/Thermo1final.png")
+        self.image_1 = cv2.cvtColor(self.image_1, cv2.COLOR_BGR2RGBA)
+        self.image_1 = cv2.resize(self.image_1, (Conf.width, Conf.height))
         size = np.shape(self.image_1)[:2]
         self.tex_handler.bind_texture(12, self.image_1, size[0], size[1])
 
         self.image_2 = cv2.imread("./ressources/Thermo2final.png")
+        self.image_2 = cv2.cvtColor(self.image_2, cv2.COLOR_BGR2RGBA)
+        self.image_2 = cv2.resize(self.image_2, (Conf.width, Conf.height))
+
         size = np.shape(self.image_2)[:2]
         self.tex_handler.bind_texture(11, self.image_2, size[0], size[1])
 
         self.image_3 = cv2.imread("./ressources/Thermo3final.png")
+        self.image_3 = cv2.cvtColor(self.image_3, cv2.COLOR_BGR2RGBA)
+        self.image_3 = cv2.resize(self.image_3, (Conf.width, Conf.height))
         size = np.shape(self.image_3)[:2]
         self.tex_handler.bind_texture(10, self.image_3, size[0], size[1])
 
@@ -786,7 +793,7 @@ class DrawingHandler:
             for index_c in range(Conf.dim_grille[0]):
                 for index_l in range(Conf.dim_grille[1]):
                     b_xy: Brick = bricks.get(index_c, index_l)
-                    if not b_xy.is_void and not b_xy.material.is_broken or i == 0:
+                    if (not b_xy.is_void and not b_xy.material.is_broken) or i == 0:
                         index = b_xy.indexes[0]
                         temp_array = np.array(Glob.brick_array.T, dtype=ctypes.c_int32)
                         pos = (index[1]) * Glob.brick_array.step_x * (temp_array.shape[1]) + index[
@@ -829,8 +836,8 @@ class DrawingHandler:
                                     GLUT_BITMAP_HELVETICA_12,
                                     message, *text_color)"""
                         t = []
-                        for i in range(Conf.dim_grille[1]):
-                            t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, i))) - 273)
+                        for j in range(Conf.dim_grille[1]):
+                            t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, j))) - 273)
                         glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 0, 0)
 
                         if not start_button.is_ready() and "Mécanique" in Glob.physics:
@@ -886,21 +893,21 @@ class DrawingHandler:
                                 self.shader_handler_brick.unbind()
 
                         temp = Glob.brick_array.get_temp(index[0], index[1]) - 273
-                        if temp is not None:
-                            try:
-                                temp = np.mean(temp)
-                            except Exception as e:
-                                return
+                        try:
+                            temp = np.mean(temp)
+                        except Exception as e:
+                            temp = 0
 
+                        size = Conf.width, Conf.height
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)
-                            if 0 < temp < 500:
+                            if 0 <= temp < 500:
                                 message = "froid"
 
-                                # glEnable(GL_TEXTURE_2D)
-                                # self.tex_handler.use_texture(12)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(12)
                                 # draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                # glDisable(GL_TEXTURE_2D)
+                                glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
@@ -910,10 +917,10 @@ class DrawingHandler:
                             elif 500 < temp < 1400:
                                 message = "chaud"
 
-                                # glEnable(GL_TEXTURE_2D)
-                                # self.tex_handler.use_texture(11)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(11)
                                 # draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                # glDisable(GL_TEXTURE_2D)
+                                glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
@@ -923,10 +930,10 @@ class DrawingHandler:
                             else:
                                 message = "brulant"
 
-                                # glEnable(GL_TEXTURE_2D)
-                                # self.tex_handler.use_texture(10)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(10)
                                 # draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                # glDisable(GL_TEXTURE_2D)
+                                glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
