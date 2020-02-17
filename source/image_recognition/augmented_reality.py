@@ -901,7 +901,7 @@ class DrawingHandler:
                         size = Conf.width, Conf.height
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)
-                            if 0 <= temp < 500:
+                            if temp < 500:
                                 message = "froid"
 
                                 glEnable(GL_TEXTURE_2D)
