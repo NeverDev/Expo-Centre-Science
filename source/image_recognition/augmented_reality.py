@@ -890,7 +890,6 @@ class DrawingHandler:
                         self.shader_handler_brick.fix_buffer()
 
                         # draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h, step, h, 1, 1, 1)
-
                         # Affiche la tempe sur les briques
                         # message = "%0.0f °C" % temp
                         # glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
