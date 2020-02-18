@@ -906,7 +906,11 @@ class DrawingHandler:
                         t = []
                         for j in range(Conf.dim_grille[1]):
                             t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, j))) - 273)
-                        glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 1, 1)
+                        if np.max(t) <= 0:
+                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t) + 273, 1, 1, 1)
+                        else:
+                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 1, 1)
+
                         glut_print(900, 625, GLUT_BITMAP_HELVETICA_18, "T° extérieure " , 1, 1, 1)
 
                         if not start_button.is_ready() and "Mécanique" in Glob.physics:
@@ -1103,8 +1107,7 @@ class DrawingHandler:
         glut_print(0, 225, GLUT_BITMAP_HELVETICA_18, "extérieure ne doit pas ", 1, 1, 1)
         glut_print(0, 200, GLUT_BITMAP_HELVETICA_18, "être supérieure à 400°C", 1, 1, 1)
         glut_print(200, 650, GLUT_BITMAP_HELVETICA_18, "Sens de coulée ", 1, 1, 1)
-        glut_print(200, 625, GLUT_BITMAP_HELVETICA_18, "      |      ", 1, 1, 1)
-        glut_print(200, 615, GLUT_BITMAP_HELVETICA_18, "      V      ", 1, 1, 1)
+        glut_print(200, 615, GLUT_BITMAP_HELVETICA_18, "    V V V      ", 1, 1, 1)
 
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
