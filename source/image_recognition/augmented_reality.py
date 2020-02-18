@@ -304,7 +304,7 @@ class VideoAR(AugmentedReality):
             glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
-        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
+        self.buttonJeu = HandButton(0, None, 2, Conf.hand_area_8, Conf.hand_threshold_1)
         self.buttonJeu.daemon = True
         self.buttonJeu.start()
         self.buttonJeu.title = "Passer au jeu"
@@ -344,12 +344,12 @@ class DifficultyAR(AugmentedReality):
         self.active_button = None
 
     def init_start_buttons(self):
-        self.buttonCorrosion = HandButton(1, self.tex_handler, 2, Conf.hand_area_3, Conf.hand_threshold_1)
-        self.buttonMecanique = HandButton(1, self.tex_handler, 3, Conf.hand_area_4, Conf.hand_threshold_2)
-        self.buttonThermique = HandButton(1, self.tex_handler, 7, Conf.hand_area_5, Conf.hand_threshold_2)
-        self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
-        self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
-        self.buttonjeuexplication = HandButton(1, self.tex_handler, 1, Conf.hand_area_9, Conf.hand_threshold_1)
+        self.buttonCorrosion = HandButton(1, None, 2, Conf.hand_area_3, Conf.hand_threshold_1)
+        self.buttonMecanique = HandButton(1, None, 3, Conf.hand_area_4, Conf.hand_threshold_2)
+        self.buttonThermique = HandButton(1, None, 7, Conf.hand_area_5, Conf.hand_threshold_2)
+        self.buttonMulti = HandButton(1, None, 5, Conf.hand_area_6, Conf.hand_threshold_2)
+        self.buttonValider = HandButton(1, None, 6, Conf.hand_area_7, Conf.hand_threshold_2)
+        self.buttonjeuexplication = HandButton(1, None, 1, Conf.hand_area_9, Conf.hand_threshold_1)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True
@@ -475,7 +475,7 @@ class ExplicationAR(AugmentedReality):
             glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
-        self.buttonJeu = HandButton(1, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
+        self.buttonJeu = HandButton(1, None, 2, Conf.hand_area_8, Conf.hand_threshold_1)
         self.buttonJeu.daemon = True
         self.buttonJeu.start()
         self.buttonJeu.title = "Passer au jeu"
