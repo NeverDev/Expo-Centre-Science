@@ -906,7 +906,7 @@ class DrawingHandler:
                         for j in range(Conf.dim_grille[1]):
                             t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, j))) - 273)
                         if np.max(t) <= 0:
-                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t) + 273, 1, 1, 1)
+                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % (np.max(t) + 273), 1, 1, 1)
                         else:
                             glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 1, 1)
 
@@ -970,42 +970,42 @@ class DrawingHandler:
                         except Exception as e:
                             temp = 0
 
-                        size = 10, 10
+                        size = 12, 17
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)
                             if temp < 500:
-                                message = "froid"
+                                #message = "froid"
 
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                #glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                #          y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                #          GLUT_BITMAP_HELVETICA_12,
+                                #         message, *text_color)
                                 glEnable(GL_TEXTURE_2D)
                                 self.tex_handler.use_texture(12)
                                 draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
                                 glDisable(GL_TEXTURE_2D)
 
                             elif 500 < temp < 1400:
-                                message = "chaud"
+                                #message = "chaud"
 
                                 glEnable(GL_TEXTURE_2D)
                                 self.tex_handler.use_texture(11)
                                 draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
                                 glDisable(GL_TEXTURE_2D)
 
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                #glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                #           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                #           GLUT_BITMAP_HELVETICA_12,
+                                #          message, *text_color)
 
                             else:
-                                message = "brulant"
+                                #message = "brulant"
 
 
-                                glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
-                                           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
-                                           GLUT_BITMAP_HELVETICA_12,
-                                           message, *text_color)
+                                #glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
+                                #           y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
+                                #           GLUT_BITMAP_HELVETICA_12,
+                                #          message, *text_color)
                                 glEnable(GL_TEXTURE_2D)
                                 self.tex_handler.use_texture(10)
                                 draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
