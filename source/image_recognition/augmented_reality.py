@@ -336,7 +336,7 @@ class DifficultyAR(AugmentedReality):
         self.draw_handler = DrawingHandler(self.tex_handler, None, None)
 
         # Create button Handler and start them for image detection
-        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider = None, None, None, None, None
+        self.buttonCorrosion, self.buttonMecanique, self.buttonThermique, self.buttonMulti, self.buttonValider, self.jeuexplication = None, None, None, None, None, None
         self.init_start_buttons()
 
         self.active_button = None
@@ -347,18 +347,21 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique = HandButton(1, self.tex_handler, 7, Conf.hand_area_5, Conf.hand_threshold_2)
         self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
         self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
+        self.buttonjeuexplication = HandButton(1, self.tex_handler, 2, Conf.hand_area_9, Conf.hand_threshold_1)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True
         self.buttonThermique.daemon = True
         self.buttonMulti.daemon = True
         self.buttonValider.daemon = True
+        self.buttonjeuexplication.daemon = True
 
         self.buttonCorrosion.start()
         self.buttonMecanique.start()
         self.buttonThermique.start()
         self.buttonMulti.start()
         self.buttonValider.start()
+        self.buttonjeuexplication.start()
 
         Glob.physics = []
 
@@ -367,6 +370,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.title = "Corrosion + Thermique"
         self.buttonMulti.title = "Corrosion + Thermique + Mécanique"
         self.buttonValider.title = "Valider"
+        self.buttonjeuexplication.title = "Voir les explications"
 
     def render(self) -> None:
         """ render the scene with OpenGL"""
@@ -377,6 +381,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.draw()
         self.buttonMulti.draw()
         self.buttonValider.draw()
+        self.buttonjeuexplication.draw()
         glut_print(20, 650, GLUT_BITMAP_HELVETICA_18, "SELECTIONNEZ LE CAS AVEC LEQUEL VOUS VOULEZ JOUER", 1, 1, 1)
 
     def check_buttons(self) -> bool:
@@ -388,6 +393,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique.image = self.cam.image_raw
         self.buttonMulti.image = self.cam.image_raw
         self.buttonValider.image = self.cam.image_raw
+        self.buttonjeuexplication.image = self.cam.image_raw
 
         if self.buttonCorrosion.is_triggered:
             Glob.physics = ["Thermique"]
@@ -424,10 +430,72 @@ class DifficultyAR(AugmentedReality):
 
         return False
 
+    #là je sais pas comment faire pour qu il le prenne en compte comme une possibilité de changement de page donc
+    #j ai repris comme codé pour le bouton de passage au jeu mais ça doit pas être ça
+
+        if self.buttonjeuexplication.is_triggered:
+            return True
+
+        return False
+
     # change to game
 
 
-# other classes
+class ExplicationAR(AugmentedReality):
+    def __init__(self, cam) -> None:
+        super().__init__(cam)
+        self.tex_handler = TextureHandler(6)
+        self.draw_handler = DrawingHandler(self.tex_handler)
+        self.video_path = "./ressources/poche.mp4"
+        self.video_cap = cv2.VideoCapture(self.video_path)
+
+        # Create a handler for every drawing functions
+        self.draw_handler = DrawingHandler(self.tex_handler, None, None)
+        # Create button Handler and start them for image detection
+        self.buttonJeu = None
+        self.init_start_buttons()
+        self.next_frame = np.zeros((Conf.width, Conf.height, 4), np.uint8)
+        self.tex_handler.bind_texture(1, self.next_frame, Conf.width, Conf.height)
+
+    def next_video_frame(self):
+        if self.video_cap.isOpened():
+            ret, frame = self.video_cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+                frame = cv2.resize(frame, (Conf.width, Conf.height))
+                self.next_frame = cv2.flip(frame, 0)
+
+    def render_video(self):
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
+
+        if self.next_frame is not None:
+            glEnable(GL_TEXTURE_2D)
+            self.tex_handler.bind_texture(1, self.next_frame, Conf.width, Conf.height)
+            self.tex_handler.use_texture(1)
+            draw_textured_rectangle(0, 0, Conf.width - 200, Conf.height - 100)
+            glDisable(GL_TEXTURE_2D)
+
+    def init_start_buttons(self):
+        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
+        self.buttonJeu.daemon = True
+        self.buttonJeu.start()
+        self.buttonJeu.title = "Passer au jeu"
+
+    def render(self) -> None:
+        """ render the scene with OpenGL"""
+        # step 1 : draw buttons interfaces, reset button depends on the mode
+        draw_rectangle(0, 0, Conf.width, Conf.height, 0.2, 0.2, 0.2)
+        self.buttonJeu.draw()
+        self.render_video()
+
+    def check_buttons(self) -> bool:
+        """ Update button image and read button state """
+        # Set image to the newest one
+        self.buttonJeu.image = self.cam.image_raw
+        if self.buttonJeu.is_triggered:
+            return True
+        return False
+
 
 class BrickRecognition:
     """ Detect bricks from webcam frame """
@@ -838,7 +906,11 @@ class DrawingHandler:
                         t = []
                         for j in range(Conf.dim_grille[1]):
                             t.append((np.max(bricks.get_temp(Conf.dim_grille[0] - 1, j))) - 273)
-                        glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 1, 1)
+                        if np.max(t) <= 0:
+                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t) + 273, 1, 1, 1)
+                        else:
+                            glut_print(Conf.width - 100, 600, GLUT_BITMAP_HELVETICA_18, "%0.2f °C" % np.max(t), 1, 1, 1)
+
                         glut_print(900, 625, GLUT_BITMAP_HELVETICA_18, "T° extérieure " , 1, 1, 1)
 
                         if not start_button.is_ready() and "Mécanique" in Glob.physics:
@@ -1035,8 +1107,7 @@ class DrawingHandler:
         glut_print(0, 225, GLUT_BITMAP_HELVETICA_18, "extérieure ne doit pas ", 1, 1, 1)
         glut_print(0, 200, GLUT_BITMAP_HELVETICA_18, "être supérieure à 400°C", 1, 1, 1)
         glut_print(200, 650, GLUT_BITMAP_HELVETICA_18, "Sens de coulée ", 1, 1, 1)
-        glut_print(200, 625, GLUT_BITMAP_HELVETICA_18, "      |      ", 1, 1, 1)
-        glut_print(200, 615, GLUT_BITMAP_HELVETICA_18, "      V      ", 1, 1, 1)
+        glut_print(200, 615, GLUT_BITMAP_HELVETICA_18, "    V V V      ", 1, 1, 1)
 
     def draw_text_screen(self):
         texture = np.zeros((Conf.height, Conf.width, 4), np.uint8)
