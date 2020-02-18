@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from source.physics.liquid_equation import *
-from source.image_recognition.augmented_reality import GameAR, DifficultyAR, VideoAR, CalibrationAR, \
+from source.image_recognition.augmented_reality import GameAR, DifficultyAR, VideoAR, CalibrationAR, ExplicationAR, \
     Camera
 
 from OpenGL.GLU import *

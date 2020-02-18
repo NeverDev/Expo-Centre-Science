@@ -446,7 +446,7 @@ class ExplicationAR(AugmentedReality):
         super().__init__(cam)
         self.tex_handler = TextureHandler(6)
         self.draw_handler = DrawingHandler(self.tex_handler)
-        self.video_path = "./ressources/poche2.mp4"
+        self.video_path = "./ressources/poche.mp4"
         self.video_cap = cv2.VideoCapture(self.video_path)
 
         # Create a handler for every drawing functions
