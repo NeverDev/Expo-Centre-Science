@@ -88,6 +88,8 @@ class MainProgram:
             self.idle_difficulty()
         elif type(self.current_activity) == GameAR:
             self.idle_game()
+        elif type(self.current_activity) == ExplicationAR:
+            self.idle_explication()
 
         # tell OpenGL to redraw as soon as possible
         glutPostRedisplay()
@@ -131,19 +133,22 @@ class MainProgram:
         self.current_activity.next_video_frame()
 
         if self.current_activity.check_buttons():
-            self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                           self.liquid_im, self.liquid_grid)
+            self.current_activity =  DifficultyAR(self.cam)
 
     def idle_difficulty(self):
 
         self.current_activity.cam.take_frame()
 
-        if self.current_activity.check_buttons():
-            self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
-                                           self.liquid_im, self.liquid_grid)
+        change_mode, to_game = self.current_activity.check_buttons()
+        if change_mode:
+            if to_game:
+                self.current_activity = GameAR(self.cam, Conf.width, Conf.height, self.q_activate,
+                                               self.liquid_im, self.liquid_grid)
+            else:
+                self.current_activity = ExplicationAR(self.cam)
 
-        #Mais là je ne sais pas quoi mettre pour qu il me prenne en compte que qd le bouton "voir les explications" est
-        #activé il passe sur la fenetre ExplicationAR
+        # Mais là je ne sais pas quoi mettre pour qu il me prenne en compte que qd le bouton "voir les explications" est
+        # activé il passe sur la fenetre ExplicationAR
 
         """
         # Timer Example
@@ -249,16 +254,14 @@ class MainProgram:
         # swap between scene display
         if type(self.current_activity) == CalibrationAR:
             self.display_calibration()
-            pass
         elif type(self.current_activity) == VideoAR:
             self.display_video()
-            pass
         elif type(self.current_activity) == DifficultyAR:
             self.display_difficulty()
-            pass
         elif type(self.current_activity) == GameAR:
             self.display_Game()
-
+        elif type(self.current_activity) == ExplicationAR:
+            self.display_explication()
         glutSwapBuffers()
 
     def display_calibration(self):
@@ -289,6 +292,12 @@ class MainProgram:
         else:
             self.current_activity.buttonStart.unpause()
         pass
+
+    def display_explication(self):
+        # TODO render video screen here
+        self.current_activity: ExplicationAR
+        self.current_activity.render()  # look at ExplicationAR.render()
+
 
     @staticmethod
     def reshape(w, h):

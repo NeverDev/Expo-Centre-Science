@@ -46,24 +46,26 @@ class GameAR(AugmentedReality):
 
         # Create a texture handler with 6 different textures
         self.tex_handler = TextureHandler(14)
-        self.image_1 = cv2.imread("./ressources/Thermo1final.png")
-        self.image_1 = cv2.cvtColor(self.image_1, cv2.COLOR_BGR2RGBA)
-        self.image_1 = cv2.resize(self.image_1, (Conf.width, Conf.height))
-        size = np.shape(self.image_1)[:2]
-        self.tex_handler.bind_texture(12, self.image_1, size[0], size[1])
+        image = cv2.imread("./ressources/Thermo1final.png")
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
+        image = cv2.resize(image, (Conf.width, Conf.height))
+        image = cv2.flip(image, 0)
+        size = np.shape(image)[:2]
+        self.tex_handler.bind_texture(12,image, size[1], size[0])
 
-        self.image_2 = cv2.imread("./ressources/Thermo2final.png")
-        self.image_2 = cv2.cvtColor(self.image_2, cv2.COLOR_BGR2RGBA)
-        self.image_2 = cv2.resize(self.image_2, (Conf.width, Conf.height))
+        image = cv2.imread("./ressources/Thermo2final.png")
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
+        image = cv2.resize(image, (Conf.width, Conf.height))
+        image = cv2.flip(image, 0)
+        size = np.shape(image)[:2]
+        self.tex_handler.bind_texture(11, image, size[1], size[0])
 
-        size = np.shape(self.image_2)[:2]
-        self.tex_handler.bind_texture(11, self.image_2, size[0], size[1])
-
-        self.image_3 = cv2.imread("./ressources/Thermo3final.png")
-        self.image_3 = cv2.cvtColor(self.image_3, cv2.COLOR_BGR2RGBA)
-        self.image_3 = cv2.resize(self.image_3, (Conf.width, Conf.height))
-        size = np.shape(self.image_3)[:2]
-        self.tex_handler.bind_texture(10, self.image_3, size[0], size[1])
+        image = cv2.imread("./ressources/Thermo3final.png")
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGBA)
+        image = cv2.resize(image, (Conf.width, Conf.height))
+        image = cv2.flip(image, 0)
+        size = np.shape(image)[:2]
+        self.tex_handler.bind_texture(10, image, size[1], size[0])
 
         # Create a handler for every drawing functions
         self.draw_handler = DrawingHandler(self.tex_handler, q_activate, liquid_im)
@@ -347,7 +349,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonThermique = HandButton(1, self.tex_handler, 7, Conf.hand_area_5, Conf.hand_threshold_2)
         self.buttonMulti = HandButton(1, self.tex_handler, 5, Conf.hand_area_6, Conf.hand_threshold_2)
         self.buttonValider = HandButton(1, self.tex_handler, 6, Conf.hand_area_7, Conf.hand_threshold_2)
-        self.buttonjeuexplication = HandButton(1, self.tex_handler, 2, Conf.hand_area_9, Conf.hand_threshold_1)
+        self.buttonjeuexplication = HandButton(1, self.tex_handler, 1, Conf.hand_area_9, Conf.hand_threshold_1)
 
         self.buttonCorrosion.daemon = True
         self.buttonMecanique.daemon = True
@@ -384,7 +386,7 @@ class DifficultyAR(AugmentedReality):
         self.buttonjeuexplication.draw()
         glut_print(20, 650, GLUT_BITMAP_HELVETICA_18, "SELECTIONNEZ LE CAS AVEC LEQUEL VOUS VOULEZ JOUER", 1, 1, 1)
 
-    def check_buttons(self) -> bool:
+    def check_buttons(self) -> (bool, bool):
         """ Update button image and read button state """
 
         # Set image to the newest one
@@ -426,17 +428,14 @@ class DifficultyAR(AugmentedReality):
         print(Glob.physics)
 
         if self.buttonValider.is_triggered and len(Glob.physics) > 0:
-            return True
+            return True, True
+        if self.buttonjeuexplication.is_triggered:
+            return True, False
 
-        return False
+        return False, False
 
     #là je sais pas comment faire pour qu il le prenne en compte comme une possibilité de changement de page donc
     #j ai repris comme codé pour le bouton de passage au jeu mais ça doit pas être ça
-
-        if self.buttonjeuexplication.is_triggered:
-            return True
-
-        return False
 
     # change to game
 
@@ -466,7 +465,7 @@ class ExplicationAR(AugmentedReality):
                 self.next_frame = cv2.flip(frame, 0)
 
     def render_video(self):
-        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "VIDEO", 1, 0, 0)
+        glut_print(20, 20, GLUT_BITMAP_HELVETICA_18, "Explication", 1, 0, 1)
 
         if self.next_frame is not None:
             glEnable(GL_TEXTURE_2D)
@@ -476,7 +475,7 @@ class ExplicationAR(AugmentedReality):
             glDisable(GL_TEXTURE_2D)
 
     def init_start_buttons(self):
-        self.buttonJeu = HandButton(0, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
+        self.buttonJeu = HandButton(1, self.tex_handler, 2, Conf.hand_area_8, Conf.hand_threshold_1)
         self.buttonJeu.daemon = True
         self.buttonJeu.start()
         self.buttonJeu.title = "Passer au jeu"
@@ -971,28 +970,27 @@ class DrawingHandler:
                         except Exception as e:
                             temp = 0
 
-                        size = Conf.width, Conf.height
+                        size = 10, 10
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)
                             if temp < 500:
                                 message = "froid"
 
-                                glEnable(GL_TEXTURE_2D)
-                                self.tex_handler.use_texture(12)
-                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                glDisable(GL_TEXTURE_2D)
-
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                            GLUT_BITMAP_HELVETICA_12,
                                            message, *text_color)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(12)
+                                draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
+                                glDisable(GL_TEXTURE_2D)
 
                             elif 500 < temp < 1400:
                                 message = "chaud"
 
                                 glEnable(GL_TEXTURE_2D)
                                 self.tex_handler.use_texture(11)
-                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
+                                draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
                                 glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
@@ -1003,15 +1001,16 @@ class DrawingHandler:
                             else:
                                 message = "brulant"
 
-                                glEnable(GL_TEXTURE_2D)
-                                self.tex_handler.use_texture(10)
-                                # draw_textured_rectangle(x_s, y_s, size[0], size[1])
-                                glDisable(GL_TEXTURE_2D)
 
                                 glut_print(x_s + index_c * step + .5 * step - 2.5 * len(message),
                                            y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5,
                                            GLUT_BITMAP_HELVETICA_12,
                                            message, *text_color)
+                                glEnable(GL_TEXTURE_2D)
+                                self.tex_handler.use_texture(10)
+                                draw_textured_rectangle(x_s + index_c * step + .5 * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h + .5 * h - 5, size[0], size[1])
+                                glDisable(GL_TEXTURE_2D)
+
 
         else:
             draw_rectangle(x_s + index_c * step, y_s + (Conf.dim_grille[1] - index_l - 1) * h,
