@@ -969,7 +969,7 @@ class DrawingHandler:
                         except Exception as e:
                             temp = 0
 
-                        size = 12, 17
+                        size = 60, 15
                         if "Thermique" in Glob.physics:
                             text_color = (0, 0, 0)
                             if temp < 500:
