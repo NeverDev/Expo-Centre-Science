@@ -434,8 +434,6 @@ class DifficultyAR(AugmentedReality):
 
         return False, False
 
-    #là je sais pas comment faire pour qu il le prenne en compte comme une possibilité de changement de page donc
-    #j ai repris comme codé pour le bouton de passage au jeu mais ça doit pas être ça
 
     # change to game
 
