@@ -268,7 +268,7 @@ class CalibrationAR(AugmentedReality):
         glDisable(GL_TEXTURE_2D)
 
 
-# Video Scene
+
 class VideoAR(AugmentedReality):
     def __init__(self, cam) -> None:
         super().__init__(cam)
